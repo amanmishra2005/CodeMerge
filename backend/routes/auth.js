@@ -56,8 +56,40 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Helper to normalize platforms object into an array for legacy accounts
+function normalizePlatforms(platforms) {
+  if (Array.isArray(platforms)) {
+    return platforms;
+  }
+  if (platforms && typeof platforms === 'object') {
+    const list = [];
+    if (platforms.leetcode && platforms.leetcode.username) {
+      list.push({ platform: 'leetcode', username: platforms.leetcode.username, label: 'LeetCode' });
+    }
+    if (platforms.codeforces && platforms.codeforces.username) {
+      list.push({ platform: 'codeforces', username: platforms.codeforces.username, label: 'Codeforces' });
+    }
+    if (platforms.gfg && platforms.gfg.username) {
+      list.push({ platform: 'gfg', username: platforms.gfg.username, label: 'GeeksforGeeks' });
+    }
+    if (platforms.hackerrank && platforms.hackerrank.username) {
+      list.push({ platform: 'hackerrank', username: platforms.hackerrank.username, label: 'HackerRank' });
+    }
+    return list;
+  }
+  return [];
+}
+
 // @route  GET /api/auth/me
 router.get('/me', protect, async (req, res) => {
+  let migrated = false;
+  if (!Array.isArray(req.user.platforms)) {
+    req.user.platforms = normalizePlatforms(req.user.platforms);
+    migrated = true;
+  }
+  if (migrated) {
+    await req.user.save();
+  }
   res.json({ user: req.user.toSafeObject() });
 });
 

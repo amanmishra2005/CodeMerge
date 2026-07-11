@@ -6,7 +6,7 @@ const features = [
   {
     icon: GitMerge,
     title: 'One link, every platform',
-    desc: 'Connect LeetCode, Codeforces, GeeksforGeeks and HackerRank usernames once — no repeated logins.',
+    desc: 'Connect LeetCode, Codeforces, CodeChef, AtCoder, or any custom platform usernames once — no repeated logins.',
   },
   {
     icon: BarChart3,
@@ -25,8 +25,8 @@ const features = [
   },
   {
     icon: LayoutGrid,
-    title: 'One dashboard, not four tabs',
-    desc: 'Stop tab-switching between platforms just to know where you stand.',
+    title: 'One unified dashboard',
+    desc: 'Stop switching between multiple platforms just to know where you stand.',
   },
   {
     icon: ShieldCheck,
@@ -60,12 +60,12 @@ export default function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="card group p-6 transition-colors hover:border-accent/60"
+              className="card group p-6 transition-all duration-300 hover:border-accent/40 hover:bg-surface2/25 hover:shadow-[0_0_30px_rgba(76,141,255,0.06)] hover:-translate-y-1 cursor-default"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-accent transition-transform group-hover:scale-110">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-accent transition-transform group-hover:scale-110 shadow-[0_0_15px_rgba(76,141,255,0.1)]">
                 <f.icon size={20} />
               </span>
-              <h3 className="mt-4 font-display text-lg font-semibold text-text">{f.title}</h3>
+              <h3 className="mt-4 font-display text-lg font-semibold text-text transition-colors group-hover:text-accent">{f.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">{f.desc}</p>
             </motion.div>
           ))}

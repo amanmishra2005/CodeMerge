@@ -19,12 +19,16 @@ const COLORS = { easy: '#3DDC84', medium: '#FFB454', hard: '#FF5C5C' };
 export default function DifficultyChart({ platforms, totals }) {
   const barData = (platforms || [])
     .filter((p) => !p.error)
-    .map((p) => ({
-      name: p.platform.charAt(0).toUpperCase() + p.platform.slice(1),
-      easy: p.easy,
-      medium: p.medium,
-      hard: p.hard,
-    }));
+    .map((p) => {
+      const platformName = p.platform.charAt(0).toUpperCase() + p.platform.slice(1);
+      const suffix = p.label ? ` (${p.label})` : ` (@${p.username})`;
+      return {
+        name: `${platformName}${suffix}`,
+        easy: p.easy,
+        medium: p.medium,
+        hard: p.hard,
+      };
+    });
 
   const pieData = [
     { name: 'Easy', value: totals?.easy || 0, color: COLORS.easy },

@@ -22,7 +22,9 @@ export default function PlatformCard({ platform, delay }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: m.color }} />
-          <span className="font-display font-semibold text-text">{m.label}</span>
+          <span className="font-display font-semibold text-text">
+            {platform.label ? `${m.label} (${platform.label})` : m.label}
+          </span>
         </div>
         <span className="font-mono text-xs text-muted">@{platform.username}</span>
       </div>

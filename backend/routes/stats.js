@@ -9,18 +9,51 @@ const getHackerRankStats = require('../utils/platforms/hackerrank');
 
 const router = express.Router();
 
+// Helper to normalize platforms object into an array for legacy accounts
+function normalizePlatforms(platforms) {
+  if (Array.isArray(platforms)) {
+    return platforms;
+  }
+  if (platforms && typeof platforms === 'object') {
+    const list = [];
+    if (platforms.leetcode && platforms.leetcode.username) {
+      list.push({ platform: 'leetcode', username: platforms.leetcode.username, label: 'LeetCode' });
+    }
+    if (platforms.codeforces && platforms.codeforces.username) {
+      list.push({ platform: 'codeforces', username: platforms.codeforces.username, label: 'Codeforces' });
+    }
+    if (platforms.gfg && platforms.gfg.username) {
+      list.push({ platform: 'gfg', username: platforms.gfg.username, label: 'GeeksforGeeks' });
+    }
+    if (platforms.hackerrank && platforms.hackerrank.username) {
+      list.push({ platform: 'hackerrank', username: platforms.hackerrank.username, label: 'HackerRank' });
+    }
+    return list;
+  }
+  return [];
+}
+
 // @route  PUT /api/stats/platforms
 // @desc   Save/update linked platform usernames for the logged-in user
 router.put('/platforms', protect, async (req, res) => {
   try {
-    const { leetcode, codeforces, gfg, hackerrank } = req.body;
+    const { platforms } = req.body;
 
-    req.user.platforms = {
-      leetcode: { username: (leetcode || '').trim() },
-      codeforces: { username: (codeforces || '').trim() },
-      gfg: { username: (gfg || '').trim() },
-      hackerrank: { username: (hackerrank || '').trim() },
-    };
+    if (!Array.isArray(platforms)) {
+      return res.status(400).json({ message: 'Platforms must be an array' });
+    }
+
+    req.user.platforms = platforms
+      .map((p) => ({
+        platform: (p.platform || '').trim(),
+        username: (p.username || '').trim(),
+        label: (p.label || '').trim(),
+        totalSolved: Number(p.totalSolved) || 0,
+        easy: Number(p.easy) || 0,
+        medium: Number(p.medium) || 0,
+        hard: Number(p.hard) || 0
+      }))
+      .filter((p) => p.platform && p.username);
 
     await req.user.save();
     res.json({ platforms: req.user.platforms });
@@ -33,14 +66,54 @@ router.put('/platforms', protect, async (req, res) => {
 // @desc   Fetch fresh stats from every linked platform and store a snapshot
 router.get('/refresh', protect, async (req, res) => {
   try {
-    const { leetcode, codeforces, gfg, hackerrank } = req.user.platforms || {};
+    let migrated = false;
+    if (!Array.isArray(req.user.platforms)) {
+      req.user.platforms = normalizePlatforms(req.user.platforms);
+      migrated = true;
+    }
+    if (migrated) {
+      await req.user.save();
+    }
 
-    const results = await Promise.all([
-      leetcode && leetcode.username ? getLeetCodeStats(leetcode.username) : null,
-      codeforces && codeforces.username ? getCodeforcesStats(codeforces.username) : null,
-      gfg && gfg.username ? getGfgStats(gfg.username) : null,
-      hackerrank && hackerrank.username ? getHackerRankStats(hackerrank.username) : null,
-    ]);
+    const platforms = req.user.platforms || [];
+
+    const fetchers = {
+      leetcode: getLeetCodeStats,
+      codeforces: getCodeforcesStats,
+      gfg: getGfgStats,
+      hackerrank: getHackerRankStats,
+    };
+
+    const results = await Promise.all(
+      platforms.map(async (p) => {
+        if (!p.username) return null;
+        const fetcher = fetchers[p.platform.toLowerCase()];
+        if (fetcher) {
+          const stats = await fetcher(p.username);
+          if (stats) {
+            return {
+              ...stats,
+              label: p.label || '',
+              id: p._id ? p._id.toString() : '',
+            };
+          }
+          return null;
+        } else {
+          // Custom platform - return manually entered stats
+          return {
+            platform: p.platform,
+            username: p.username,
+            totalSolved: p.totalSolved || 0,
+            easy: p.easy || 0,
+            medium: p.medium || 0,
+            hard: p.hard || 0,
+            label: p.label || '',
+            id: p._id ? p._id.toString() : '',
+            error: null
+          };
+        }
+      })
+    );
 
     const snapshots = results.filter(Boolean);
 
@@ -67,18 +140,31 @@ router.get('/refresh', protect, async (req, res) => {
 // @route  GET /api/stats/me
 // @desc   Return the last saved stats snapshot without re-fetching
 router.get('/me', protect, async (req, res) => {
-  const snapshots = req.user.lastStats || [];
-  const totals = snapshots.reduce(
-    (acc, s) => {
-      acc.totalSolved += s.totalSolved || 0;
-      acc.easy += s.easy || 0;
-      acc.medium += s.medium || 0;
-      acc.hard += s.hard || 0;
-      return acc;
-    },
-    { totalSolved: 0, easy: 0, medium: 0, hard: 0 }
-  );
-  res.json({ platforms: snapshots, totals });
+  try {
+    let migrated = false;
+    if (!Array.isArray(req.user.platforms)) {
+      req.user.platforms = normalizePlatforms(req.user.platforms);
+      migrated = true;
+    }
+    if (migrated) {
+      await req.user.save();
+    }
+
+    const snapshots = req.user.lastStats || [];
+    const totals = snapshots.reduce(
+      (acc, s) => {
+        acc.totalSolved += s.totalSolved || 0;
+        acc.easy += s.easy || 0;
+        acc.medium += s.medium || 0;
+        acc.hard += s.hard || 0;
+        return acc;
+      },
+      { totalSolved: 0, easy: 0, medium: 0, hard: 0 }
+    );
+    res.json({ platforms: snapshots, totals });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to load stats', error: err.message });
+  }
 });
 
 module.exports = router;

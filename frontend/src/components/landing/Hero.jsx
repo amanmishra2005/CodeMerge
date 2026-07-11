@@ -6,11 +6,11 @@ import { ArrowRight, Code2 } from 'lucide-react';
 const nodes = [
   { label: 'LeetCode', color: '#FFB454', x: 40, y: 40 },
   { label: 'Codeforces', color: '#4C8DFF', x: 360, y: 40 },
-  { label: 'GfG', color: '#3DDC84', x: 40, y: 260 },
-  { label: 'HackerRank', color: '#FF5C5C', x: 360, y: 260 },
+  { label: 'CodeChef', color: '#A0785C', x: 40, y: 240 },
+  { label: 'GeeksforGeeks', color: '#3DDC84', x: 360, y: 240 },
 ];
 
-const center = { x: 200, y: 150 };
+const center = { x: 200, y: 140 };
 
 function useCountUp(target, durationMs = 1800) {
   const [value, setValue] = useState(0);
@@ -33,8 +33,8 @@ function MergeGraph() {
   const count = useCountUp(1482);
 
   return (
-    <div className="relative mx-auto w-full max-w-md">
-      <svg viewBox="0 0 400 300" className="w-full">
+    <div className="relative mx-auto w-full max-w-md p-4 rounded-3xl bg-surface/20 border border-border/20 shadow-[0_0_50px_rgba(76,141,255,0.05)] backdrop-blur-sm">
+      <svg viewBox="0 0 400 300" className="w-full relative z-10">
         {nodes.map((n, i) => (
           <motion.line
             key={n.label}
@@ -90,18 +90,18 @@ function MergeGraph() {
       </svg>
 
       <div
-        className="pointer-events-none absolute left-1/2 top-[46%] -translate-x-1/2 -translate-y-1/2 text-center"
+        className="pointer-events-none absolute left-1/2 top-[47%] -translate-x-1/2 -translate-y-1/2 text-center z-20"
         style={{ width: 140 }}
       >
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.3 }}
-          className="font-mono text-3xl font-bold text-text"
+          className="font-mono text-3xl font-bold text-text drop-shadow-[0_0_15px_rgba(76,141,255,0.6)]"
         >
           {count.toLocaleString()}
         </motion.div>
-        <div className="font-mono text-[10px] uppercase tracking-widest text-muted">solved · merged</div>
+        <div className="font-mono text-[9px] uppercase tracking-widest text-muted">solved · merged</div>
       </div>
     </div>
   );
@@ -109,7 +109,9 @@ function MergeGraph() {
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden px-6 pb-24 pt-16 md:pt-24">
+    <section className="relative overflow-hidden px-6 pb-24 pt-16 md:pt-24 border-b border-border/40">
+      {/* Futuristic grid backdrop */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_60%,transparent_100%)] pointer-events-none" />
       <div className="mx-auto grid max-w-7xl items-center gap-16 md:grid-cols-2">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -125,9 +127,7 @@ export default function Hero() {
             solved, <span className="text-accent">merged</span> into one graph.
           </h1>
           <p className="mt-6 max-w-lg font-body text-lg text-muted">
-            Link LeetCode, Codeforces, GeeksforGeeks and HackerRank once. CodeMerge pulls your
-            solved counts, splits them by Easy / Medium / Hard, and hands you an AI coach that
-            actually reads your numbers.
+            Link all your coding profiles in one place. CodeMerge automatically pulls solve counts or lets you manually log custom platform metrics, combining them into one unified graph with interactive AI feedback.
           </p>
           <div className="mt-9 flex flex-wrap gap-4">
             <Link to="/register" className="btn-primary">

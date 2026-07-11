@@ -1,11 +1,16 @@
 const mongoose = require('../mongoose-provider');
 const bcrypt = require('bcryptjs');
 
-const platformSchema = new mongoose.Schema(
+const platformLinkSchema = new mongoose.Schema(
   {
-    username: { type: String, trim: true, default: '' },
-  },
-  { _id: false }
+    platform: { type: String, required: true },
+    username: { type: String, required: true, trim: true },
+    label: { type: String, trim: true, default: '' },
+    totalSolved: { type: Number, default: 0 },
+    easy: { type: Number, default: 0 },
+    medium: { type: Number, default: 0 },
+    hard: { type: Number, default: 0 }
+  }
 );
 
 const statsSnapshotSchema = new mongoose.Schema(
@@ -19,6 +24,8 @@ const statsSnapshotSchema = new mongoose.Schema(
     raw: mongoose.Schema.Types.Mixed,
     fetchedAt: { type: Date, default: Date.now },
     error: { type: String, default: null },
+    label: { type: String, default: '' },
+    id: String, // associated platform connection ID
   },
   { _id: false }
 );
@@ -28,12 +35,7 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true, minlength: 6 },
-    platforms: {
-      leetcode: { type: platformSchema, default: () => ({}) },
-      codeforces: { type: platformSchema, default: () => ({}) },
-      gfg: { type: platformSchema, default: () => ({}) },
-      hackerrank: { type: platformSchema, default: () => ({}) },
-    },
+    platforms: { type: [platformLinkSchema], default: [] },
     lastStats: { type: [statsSnapshotSchema], default: [] },
     lastFeedback: { type: String, default: '' },
     lastFeedbackAt: { type: Date, default: null },

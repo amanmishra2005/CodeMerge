@@ -11,9 +11,17 @@ export default function Footer() {
           </span>
           CodeMerge
         </div>
-        <p className="font-mono text-xs text-muted">
-          © {new Date().getFullYear()} CodeMerge. Built for developers who solve things.
-        </p>
+        <div className="flex flex-col items-center md:items-end gap-1">
+          <p className="font-mono text-xs text-muted">
+            © {new Date().getFullYear()} CodeMerge. Built for developers who solve things.
+          </p>
+          <a
+            href="mailto:support.codemerge@gmail.com"
+            className="text-[11px] font-mono text-muted hover:text-accent transition-colors duration-200"
+          >
+            support.codemerge@gmail.com
+          </a>
+        </div>
       </div>
     </footer>
   );

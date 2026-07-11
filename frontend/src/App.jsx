@@ -4,6 +4,8 @@ import Landing from './pages/Landing.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import PlatformLinkingPage from './pages/PlatformLinkingPage.jsx';
+import AIAnalysisPage from './pages/AIAnalysisPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 export default function App() {
@@ -17,6 +19,22 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/link"
+        element={
+          <ProtectedRoute>
+            <PlatformLinkingPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/analysis"
+        element={
+          <ProtectedRoute>
+            <AIAnalysisPage />
           </ProtectedRoute>
         }
       />

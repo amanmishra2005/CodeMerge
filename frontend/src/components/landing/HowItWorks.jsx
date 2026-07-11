@@ -10,7 +10,7 @@ const steps = [
   {
     n: '02',
     title: 'Link your platforms',
-    desc: 'Paste your LeetCode, Codeforces, GeeksforGeeks and HackerRank usernames into your dashboard.',
+    desc: 'Paste your coding profile usernames (such as LeetCode, Codeforces, CodeChef, or AtCoder) into your dashboard.',
   },
   {
     n: '03',
@@ -37,7 +37,7 @@ export default function HowItWorks() {
         >
           <span className="eyebrow">how it works</span>
           <h2 className="mt-3 font-display text-3xl font-bold text-text md:text-4xl">
-            From four usernames to one clear picture
+            From multiple handles to one clear picture
           </h2>
         </motion.div>
 

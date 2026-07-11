@@ -26,18 +26,19 @@ export default function Contact() {
 
   return (
     <section id="contact" className="px-6 py-24">
-      <div className="mx-auto grid max-w-7xl gap-12 md:grid-cols-2">
+      <div className="mx-auto flex flex-col items-center max-w-3xl text-center">
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
+          className="mb-10 flex flex-col items-center"
         >
           <span className="eyebrow">contact</span>
           <h2 className="mt-3 font-display text-3xl font-bold text-text md:text-4xl">
             Questions, bugs, or a feature idea?
           </h2>
-          <p className="mt-4 max-w-md text-muted">
+          <p className="mt-4 max-w-lg text-muted text-sm leading-relaxed">
             Send it over — we read every message. Whether it's a platform we should add or
             something that broke, tell us here.
           </p>
@@ -45,11 +46,11 @@ export default function Contact() {
 
         <motion.form
           onSubmit={handleSubmit}
-          initial={{ opacity: 0, x: 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
-          className="card space-y-4 p-6"
+          className="card space-y-4 p-6 sm:p-8 w-full max-w-xl text-left border border-border/80 bg-surface2/30 backdrop-blur-md"
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <input
@@ -87,7 +88,7 @@ export default function Contact() {
             className="input-field resize-none"
           />
 
-          <button type="submit" disabled={status === 'loading'} className="btn-primary w-full">
+          <button type="submit" disabled={status === 'loading'} className="btn-primary w-full shadow-[0_0_20px_rgba(76,141,255,0.15)]">
             {status === 'loading' ? 'Sending...' : (
               <>
                 Send message <Send size={16} />
@@ -99,12 +100,12 @@ export default function Contact() {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex items-center gap-2 text-sm text-easy"
+              className="flex items-center gap-2 text-sm text-easy justify-center"
             >
               <CheckCircle2 size={16} /> Message sent. Thanks for reaching out!
             </motion.p>
           )}
-          {status === 'error' && <p className="text-sm text-hard">{error}</p>}
+          {status === 'error' && <p className="text-sm text-hard text-center">{error}</p>}
         </motion.form>
       </div>
     </section>

@@ -1,5 +1,6 @@
 const express = require('express');
 const Contact = require('../models/Contact');
+const sendContactEmail = require('../utils/email');
 
 const router = express.Router();
 
@@ -14,6 +15,10 @@ router.post('/', async (req, res) => {
     }
 
     const contact = await Contact.create({ name, email, subject, message });
+
+    // Dispatch direct message notification
+    await sendContactEmail({ name, email, subject, message });
+
     res.status(201).json({ message: 'Thanks! Your message has been received.', contact });
   } catch (err) {
     res.status(500).json({ message: 'Failed to submit your message', error: err.message });
