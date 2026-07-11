@@ -4,10 +4,6 @@
 HackerRank — into a single animated dashboard, with AI-powered (Gemini) feedback on your
 overall profile.
 
-> Suggested project name: **CodeMerge** — it plays on `git merge` (developer-native vocabulary)
-> and literally describes the product: merging every coding platform's stats into one place.
-> Alternatives if you want options: **UniCode Stats**, **DevTally**, **StackSolved**, **CodeConflux**.
-
 ## Project structure
 
 ```
