@@ -1,10 +1,47 @@
-# CodeMerge
+<div align="center">
 
-**CodeMerge** unifies your coding-platform stats — LeetCode, Codeforces, GeeksforGeeks and
-HackerRank — into a single animated dashboard, with AI-powered (Gemini) feedback on your
-overall profile.
+# 🧬 CodeMerge
 
-## Project structure
+### Unify your coding-platform stats into one animated, AI-powered dashboard
+
+**LeetCode · Codeforces · GeeksforGeeks · HackerRank — merged into a single profile**
+
+![Node](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![Gemini](https://img.shields.io/badge/Google-Gemini%20AI-8E75B2?style=for-the-badge&logo=google-gemini&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-Frontend-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+
+</div>
+
+---
+
+## ✨ What is CodeMerge?
+
+CodeMerge pulls your solved-problem stats from **four major competitive programming platforms** and merges them into one clean, animated dashboard — so you never have to open four different tabs to see how you're doing.
+
+On top of that, it uses **Google's Gemini API** to analyze your merged profile and generate personalized, AI-powered feedback: your strengths, weak spots, and what to grind next.
+
+| 🎯 Feature | Description |
+|---|---|
+| 🖇️ **Multi-platform linking** | Connect your LeetCode, Codeforces, GeeksforGeeks & HackerRank usernames |
+| 📊 **Aggregated dashboard** | Total solved + Easy/Medium/Hard breakdown, per-platform cards, animated charts |
+| 🤖 **AI feedback** | Gemini-powered analysis of your merged coding profile |
+| 🔐 **Secure auth** | JWT authentication with bcrypt password hashing |
+| 🎬 **Animated UI** | Framer Motion transitions across landing, auth, and dashboard pages |
+| 📬 **Contact form** | Messages stored directly in MongoDB |
+
+---
+
+## 🖼️ Pages & Experience
+
+- **Landing page** — animated hero with a live "merge graph" visualization, features section, how-it-works walkthrough, and contact form
+- **Register / Login** — smooth animated transitions, form validation
+- **Dashboard** — merged stats, per-platform breakdown cards, Recharts visualizations, and the Gemini-powered AI feedback tab
+
+---
+
+## 🗂️ Project Structure
 
 ```
 codemerge/
@@ -12,30 +49,26 @@ codemerge/
 └── frontend/    # React + Vite + Tailwind + Framer Motion
 ```
 
-## Features
+---
 
-- Animated landing page (hero with a "merge graph" visualization, features, how-it-works, contact)
-- Animated register/login pages
-- Link LeetCode, Codeforces, GeeksforGeeks and HackerRank usernames
-- Aggregated dashboard: total solved + Easy/Medium/Hard breakdown, per-platform cards, charts
-- AI feedback tab powered by Google's Gemini API, analyzing your merged profile
-- Contact form (stores messages in MongoDB)
-- JWT authentication, password hashing with bcrypt
+## ⚙️ Getting Started
 
-## 1. Backend setup
+### 1️⃣ Backend Setup
 
 ```bash
 cd backend
 npm install
-cp .env.example .env   # already provided as .env — just fill in real values
+cp .env.example .env   # already provided — just fill in real values
 ```
 
 Edit `backend/.env`:
 
-- `MONGO_URI` — a MongoDB connection string (use [MongoDB Atlas](https://www.mongodb.com/atlas) free tier, or a local MongoDB instance)
-- `JWT_SECRET` — any long random string
-- `GEMINI_API_KEY` — get one free at https://aistudio.google.com/app/apikey
-- `CLIENT_ORIGIN` — the URL your frontend runs on (e.g. `http://localhost:5173` locally, or your deployed frontend URL)
+| Variable | Description |
+|---|---|
+| `MONGO_URI` | MongoDB connection string ([Atlas free tier](https://www.mongodb.com/atlas) or local instance) |
+| `JWT_SECRET` | Any long, random string |
+| `GEMINI_API_KEY` | Free key from [Google AI Studio](https://aistudio.google.com/app/apikey) |
+| `CLIENT_ORIGIN` | Your frontend's URL (e.g. `http://localhost:5173`) |
 
 Run it:
 
@@ -45,19 +78,21 @@ npm run dev      # nodemon, auto-restarts
 npm start
 ```
 
-The API runs on `http://localhost:5000/api` by default. Check `GET /api/health`.
+> API runs on `http://localhost:5000/api` by default. Health check: `GET /api/health`
 
-## 2. Frontend setup
+### 2️⃣ Frontend Setup
 
 ```bash
 cd frontend
 npm install
-cp .env.example .env    # already provided as .env — just confirm the value
+cp .env.example .env    # already provided — just confirm the value
 ```
 
 Edit `frontend/.env`:
 
-- `VITE_API_URL` — your backend's API base URL (e.g. `http://localhost:5000/api` locally, or your deployed backend URL + `/api`)
+| Variable | Description |
+|---|---|
+| `VITE_API_URL` | Your backend's API base URL (e.g. `http://localhost:5000/api`) |
 
 Run it:
 
@@ -65,35 +100,64 @@ Run it:
 npm run dev
 ```
 
-Visit `http://localhost:5173`.
+Visit **`http://localhost:5173`** 🎉
 
-## 3. Notes on platform data sources
+---
 
-- **LeetCode** — uses LeetCode's own public GraphQL endpoint. No key needed.
-- **Codeforces** — uses the official Codeforces REST API. Codeforces has no built-in
-  easy/medium/hard labels, so solved problems are bucketed by rating
-  (`≤1200` easy, `1201–1900` medium, `>1900` hard).
-- **GeeksforGeeks** — GfG has no official public API, so this uses a best-effort
-  community endpoint. If it's ever down, the dashboard will show a friendly "unavailable" message
-  for that platform instead of breaking the whole page.
-- **HackerRank** — HackerRank does not expose any public API for solved-problem counts, so it's
-  linked for reference only; its card will explain this rather than show fake numbers.
+## 🔌 Platform Data Sources
 
-## 4. Deploying
+<details>
+<summary><b>LeetCode</b> — no key needed</summary>
+<br>
+Uses LeetCode's own public GraphQL endpoint directly.
+</details>
 
-**Backend** — deploy to any Node host (Render, Railway, Fly.io, an EC2/VPS, etc.). Set the same
-environment variables from `.env` in your host's dashboard, then set `CLIENT_ORIGIN` to your
-deployed frontend's URL.
+<details>
+<summary><b>Codeforces</b> — official REST API</summary>
+<br>
+Codeforces has no built-in Easy/Medium/Hard labels, so solved problems are bucketed by problem rating:
 
-**Frontend** — deploy to Vercel, Netlify, or any static host that supports a Vite build
-(`npm run build` produces a `dist/` folder). Set `VITE_API_URL` to your deployed backend's
-`/api` URL as an environment variable in your host's dashboard before building.
+- `≤ 1200` → Easy
+- `1201 – 1900` → Medium
+- `> 1900` → Hard
+</details>
 
-**MongoDB** — use MongoDB Atlas's free M0 cluster for a zero-cost hosted database; just
-whitelist your backend host's IP (or `0.0.0.0/0` for simplicity) and paste the connection
-string into `MONGO_URI`.
+<details>
+<summary><b>GeeksforGeeks</b> — best-effort community endpoint</summary>
+<br>
+GfG has no official public API. If the community endpoint is ever down, the dashboard gracefully shows a friendly "unavailable" message for that platform instead of breaking the page.
+</details>
 
-## Tech stack
+<details>
+<summary><b>HackerRank</b> — reference link only</summary>
+<br>
+HackerRank exposes no public API for solved-problem counts. It's linked for reference only, and its card explains this clearly instead of showing fake numbers.
+</details>
 
-- **Frontend:** React 18, Vite, Tailwind CSS, Framer Motion, Recharts, React Router, Axios, lucide-react
-- **Backend:** Node.js, Express, MongoDB + Mongoose, JWT, bcryptjs, Google Gemini API
+---
+
+## 🚀 Deployment
+
+| Layer | Where | Notes |
+|---|---|---|
+| **Backend** | Render, Railway, Fly.io, or any Node host | Set the same env vars as `.env`; point `CLIENT_ORIGIN` to your deployed frontend |
+| **Frontend** | Vercel, Netlify, or any static host | `npm run build` → `dist/`; set `VITE_API_URL` to your backend's `/api` URL |
+| **Database** | MongoDB Atlas (M0 free tier) | Whitelist your backend's IP (or `0.0.0.0/0`); paste connection string into `MONGO_URI` |
+
+---
+
+## 🛠️ Tech Stack
+
+**Frontend**
+`React 18` · `Vite` · `Tailwind CSS` · `Framer Motion` · `Recharts` · `React Router` · `Axios` · `lucide-react`
+
+**Backend**
+`Node.js` · `Express` · `MongoDB + Mongoose` · `JWT` · `bcryptjs` · `Google Gemini API`
+
+---
+
+<div align="center">
+
+Built with ⚡ and a lot of merged commits.
+
+</div>
