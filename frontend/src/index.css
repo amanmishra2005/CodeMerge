@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0b1120;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(76, 141, 255, 0.10), transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(255, 180, 84, 0.06), transparent 45%);
+}
+
+::selection {
+  background: #4c8dff;
+  color: #0b1120;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0b1120;
+}
+::-webkit-scrollbar-thumb {
+  background: #26314d;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #344267;
+}
+
+.card {
+  @apply bg-surface border border-border rounded-2xl;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3 font-display font-semibold text-ink transition-transform duration-200 hover:scale-[1.03] hover:brightness-110 active:scale-[0.98];
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-surface px-6 py-3 font-display font-semibold text-text transition-colors duration-200 hover:border-accent hover:text-accent;
+}
+
+.input-field {
+  @apply w-full rounded-xl border border-border bg-surface2 px-4 py-3 font-body text-text placeholder:text-muted outline-none transition-colors focus:border-accent;
+}
+
+.eyebrow {
+  @apply font-mono text-xs uppercase tracking-[0.25em] text-accent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

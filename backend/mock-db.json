@@ -1,0 +1,30 @@
+{
+  "users": [
+    {
+      "name": "Test User",
+      "email": "test@example.com",
+      "password": "$2a$10$os7OrpDX2O/lJCok38NMKu1Hacl.YpHVnpfHQMqZubvA5mr/o7IMu",
+      "platforms": {
+        "leetcode": {
+          "username": "test_lc"
+        },
+        "codeforces": {
+          "username": "test_cf"
+        },
+        "gfg": {
+          "username": "test_gfg"
+        },
+        "hackerrank": {
+          "username": "test_hr"
+        }
+      },
+      "lastStats": [],
+      "lastFeedback": "",
+      "lastFeedbackAt": null,
+      "_id": "kt1ld7h74wp",
+      "createdAt": "2026-07-11T05:20:15.690Z",
+      "updatedAt": "2026-07-11T05:21:20.737Z"
+    }
+  ],
+  "contacts": []
+}
