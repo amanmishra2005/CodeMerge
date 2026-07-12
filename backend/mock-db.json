@@ -121,7 +121,7 @@
       ],
       "lastStats": [
         {
-          "platform": "leetcode",
+          "platform": "LeetCode",
           "username": "amanmishra2008",
           "totalSolved": 37,
           "easy": 14,
@@ -157,20 +157,36 @@
         {
           "platform": "GeeksforGeeks",
           "username": "amanmishra2005",
-          "totalSolved": 0,
-          "easy": 0,
-          "medium": 0,
-          "hard": 0,
+          "totalSolved": 112,
+          "easy": 58,
+          "medium": 49,
+          "hard": 5,
+          "raw": {
+            "userHandle": "amanmishra2005",
+            "total_score": 333,
+            "monthly_score": 0,
+            "total_problems_solved": 112,
+            "pod_solved_longest_streak": 0,
+            "pod_solved_global_longest_streak": 1805,
+            "pod_solved_current_streak": 0,
+            "pod_correct_submissions_count": 0,
+            "School": 0,
+            "Basic": 16,
+            "Easy": 42,
+            "Medium": 49,
+            "Hard": 5,
+            "ProgressBar": 0
+          },
+          "error": null,
           "label": "",
-          "id": "",
-          "error": null
+          "id": ""
         }
       ],
       "lastFeedback": "",
       "lastFeedbackAt": null,
       "_id": "8375z0ivx6x",
       "createdAt": "2026-07-11T17:25:40.838Z",
-      "updatedAt": "2026-07-11T17:30:45.298Z"
+      "updatedAt": "2026-07-12T07:19:39.180Z"
     },
     {
       "name": "Alice Tester",
@@ -226,6 +242,99 @@
       "_id": "ovlr3te90pg",
       "createdAt": "2026-07-11T17:36:48.937Z",
       "updatedAt": "2026-07-11T17:53:38.995Z"
+    },
+    {
+      "name": "Aman Mishra",
+      "email": "amanmishra15.08.2005@gmail.com",
+      "password": "$2a$10$lTwcvmJ4Ot4Ojudg3okmJuAu33WFCQ31M8YefwHrY1vDxEfi/zE/G",
+      "platforms": [
+        {
+          "platform": "LeetCode",
+          "username": "amanmishra2008",
+          "label": "",
+          "totalSolved": 0,
+          "easy": 0,
+          "medium": 0,
+          "hard": 0
+        },
+        {
+          "platform": "GeeksforGeeks",
+          "username": "amanmishra2005",
+          "label": "",
+          "totalSolved": 0,
+          "easy": 0,
+          "medium": 0,
+          "hard": 0
+        }
+      ],
+      "lastStats": [
+        {
+          "platform": "LeetCode",
+          "username": "amanmishra2008",
+          "totalSolved": 37,
+          "easy": 14,
+          "medium": 18,
+          "hard": 5,
+          "raw": {
+            "username": "amanmishra2008",
+            "submitStatsGlobal": {
+              "acSubmissionNum": [
+                {
+                  "difficulty": "All",
+                  "count": 37
+                },
+                {
+                  "difficulty": "Easy",
+                  "count": 14
+                },
+                {
+                  "difficulty": "Medium",
+                  "count": 18
+                },
+                {
+                  "difficulty": "Hard",
+                  "count": 5
+                }
+              ]
+            }
+          },
+          "error": null,
+          "label": "",
+          "id": ""
+        },
+        {
+          "platform": "GeeksforGeeks",
+          "username": "amanmishra2005",
+          "totalSolved": 112,
+          "easy": 58,
+          "medium": 49,
+          "hard": 5,
+          "raw": {
+            "userHandle": "amanmishra2005",
+            "total_score": 333,
+            "monthly_score": 0,
+            "total_problems_solved": 112,
+            "pod_solved_longest_streak": 0,
+            "pod_solved_global_longest_streak": 1805,
+            "pod_solved_current_streak": 0,
+            "pod_correct_submissions_count": 0,
+            "School": 0,
+            "Basic": 16,
+            "Easy": 42,
+            "Medium": 49,
+            "Hard": 5,
+            "ProgressBar": 0
+          },
+          "error": null,
+          "label": "",
+          "id": ""
+        }
+      ],
+      "lastFeedback": "Hello Aman Mishra! Here is my analysis of your unified developer profile.\n\nYou have established a highly effective balance, with Medium problems accounting for 45% of your total progress. This is the ideal distribution profile for technical coding interviews. Most of your progress resides on GEEKSFORGEEKS (112 solved). Setting aside a regular practice window on LEETCODE (37 solved) will expose you to different problem styles.\n\nTo accelerate your preparation, here is my recommendation:\n1. Challenge yourself with 1-2 Hard-level algorithmic tasks each week, focusing on dynamic programming or network flow.\n2. Focus on dynamic programming, depth-first search, and hash maps to solidify interview patterns.\n3. Keep track of your progress on each platform to maintain a well-rounded developer profile.\n\nYou are demonstrating great dedication. Keep solving, stay consistent, and your growth will compound!",
+      "lastFeedbackAt": "2026-07-12T07:33:22.760Z",
+      "_id": "5jz9ldv4dk",
+      "createdAt": "2026-07-12T07:11:41.243Z",
+      "updatedAt": "2026-07-12T07:33:59.814Z"
     }
   ],
   "contacts": [
@@ -345,6 +454,15 @@
       "_id": "wcbga5bj53",
       "createdAt": "2026-07-11T18:54:56.547Z",
       "updatedAt": "2026-07-11T18:54:56.547Z"
+    },
+    {
+      "name": "Aman Mishra (Test)",
+      "email": "support_check@example.com",
+      "subject": "Verified SMTP Email Delivery Test",
+      "message": "Hi! This is a test confirming that the backend server has loaded the correct Google App Password jmvkpyjmauunrhya and successfully sends contact form submissions to support.codemerge@gmail.com!",
+      "_id": "cdozargh6sv",
+      "createdAt": "2026-07-12T07:30:01.227Z",
+      "updatedAt": "2026-07-12T07:30:01.227Z"
     }
   ]
 }
