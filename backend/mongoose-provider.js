@@ -17,6 +17,23 @@ if (isMock) {
   console.log("Production Mongoose: Active (connecting to real MongoDB).");
 }
 
+function isFromApplication() {
+  const stack = new Error().stack;
+  if (!stack) return false;
+  const lines = stack.split('\n');
+  for (let i = 2; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.includes('mongoose-provider.js')) {
+      continue;
+    }
+    if (line.includes('node_modules')) {
+      return false;
+    }
+    return true;
+  }
+  return false;
+}
+
 class ProxySchema extends mongooseReal.Schema {
   constructor(definition, options) {
     super(definition, options);
@@ -27,7 +44,7 @@ class ProxySchema extends mongooseReal.Schema {
   }
   pre(...args) {
     super.pre(...args);
-    if (this.compilingRealModel) return;
+    if (!isFromApplication()) return;
     const fn = args.find(arg => typeof arg === 'function');
     if (fn) {
       const hookName = args[0];
@@ -42,7 +59,7 @@ class ProxySchema extends mongooseReal.Schema {
   }
   post(...args) {
     super.post(...args);
-    if (this.compilingRealModel) return;
+    if (!isFromApplication()) return;
     const fn = args.find(arg => typeof arg === 'function');
     if (fn) {
       const hookName = args[0];
@@ -98,10 +115,7 @@ const proxyMongoose = {
     modelsMap[name] = schema;
     
     // Register the model on both initially
-    schema.compilingRealModel = true;
     const realModel = mongooseReal.model(name, schema);
-    delete schema.compilingRealModel;
-    
     const mockModel = mockMongoose.model(name, schema);
     
     // Create a proxy class/constructor
