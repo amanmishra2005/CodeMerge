@@ -13,7 +13,7 @@ const app = express();
 
 connectDB();
 
-const allowedOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
+const allowedOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5180,http://localhost:5173')
   .split(',')
   .map((o) => o.trim());
 
@@ -42,10 +42,22 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/contact', contactRoutes);
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
+// Serves built frontend static assets if available (supports unified container deployments)
+const path = require('path');
+const fs = require('fs');
+const frontendDist = path.join(__dirname, '../frontend/dist');
+
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(frontendDist, 'index.html'));
+  });
+} else {
+  // 404 handler for standalone API server
+  app.use((req, res) => {
+    res.status(404).json({ message: 'Route not found' });
+  });
+}
 
 // Global error handler
 app.use((err, req, res, next) => {
