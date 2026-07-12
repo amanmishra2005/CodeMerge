@@ -22,12 +22,12 @@ const OTHER_PLATFORMS = [
 ];
 
 const MERGING_STEPS = [
-  'Resolving developer handles...',
-  'Initiating queries to public APIs...',
-  'Compiling custom platform metrics...',
-  'Merging and compiling difficulty metrics...',
-  'Generating unified developer graph...',
-  'Ready!'
+  'Finding your coding profiles...',
+  'Connecting to platform servers...',
+  'Fetching solved problem data...',
+  'Combining difficulty rankings...',
+  'Building your unified profile...',
+  'All stats merged and ready!'
 ];
 
 export default function PlatformLinkingPage() {

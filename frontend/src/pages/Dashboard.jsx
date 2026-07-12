@@ -207,9 +207,9 @@ export default function Dashboard() {
                     <Sparkles size={24} />
                   </span>
                   <div>
-                    <h3 className="font-display text-lg font-bold text-text">AI Developer Mentor Profile</h3>
+                    <h3 className="font-display text-lg font-bold text-text">AI Mentor Report</h3>
                     <p className="mt-1 text-sm text-muted max-w-xl">
-                      Run our deep intelligence cognitive scanning report to identify your structural strengths, target concepts to practice next, and compile a roadmap.
+                      Let our AI Mentor review your combined stats, highlight your strengths, and build a personalized roadmap showing you what to practice next.
                     </p>
                   </div>
                 </div>

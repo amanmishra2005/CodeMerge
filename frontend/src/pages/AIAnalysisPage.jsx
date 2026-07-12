@@ -39,12 +39,12 @@ export default function AIAnalysisPage() {
   const navigate = useNavigate();
 
   const scanningMessages = [
-    'Initializing Neural Analyzer...',
-    'Loading aggregated solve metrics...',
-    'Evaluating Easy/Medium/Hard problem matrix...',
-    'Cross-referencing competitive benchmarks...',
-    'Compiling mentor recommendations...',
-    'Synthesizing final skill print...'
+    'Opening profile analyzer...',
+    'Reviewing your total solved counts...',
+    'Checking difficulty proportions...',
+    'Comparing with general interview standards...',
+    'Drafting tailored mentor tips...',
+    'Finalizing your report...'
   ];
 
   const fetchAnalysis = async (isRetry = false) => {
@@ -110,7 +110,7 @@ export default function AIAnalysisPage() {
             AI Profile Analysis
           </h1>
           <p className="mt-2 text-sm text-muted">
-            Our deep analysis engine reviews your combined statistics to isolate your developer strengths and map your target skill gaps.
+            Our AI Mentor reviews your combined stats to highlight your coding strengths, identify topic gaps, and suggest target concepts.
           </p>
         </div>
 
