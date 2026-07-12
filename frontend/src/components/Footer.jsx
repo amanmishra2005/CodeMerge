@@ -16,10 +16,10 @@ export default function Footer() {
             © {new Date().getFullYear()} CodeMerge. Built for developers who solve things.
           </p>
           <a
-            href="mailto:support.codemerge@gmail.com"
+            href="/#contact"
             className="text-[11px] font-mono text-muted hover:text-accent transition-colors duration-200"
           >
-            support.codemerge@gmail.com
+            Contact Support
           </a>
         </div>
       </div>

@@ -1,19 +1,19 @@
 const nodemailer = require('nodemailer');
 
 /**
- * Sends a notification email to support.codemerge@gmail.com
- * when someone submits the contact form.
+ * Sends a notification email when someone submits the contact form.
  */
 async function sendContactEmail({ name, email, subject, message }) {
   const host = process.env.SMTP_HOST || 'smtp.gmail.com';
   const port = parseInt(process.env.SMTP_PORT || '587', 10);
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
+  const recipient = process.env.SMTP_TO || user;
 
   if (!user || !pass) {
     console.log('--------------------------------------------------');
     console.log('EMAIL SIMULATION (SMTP credentials not configured in backend/.env)');
-    console.log(`To: support.codemerge@gmail.com`);
+    console.log(`To: ${recipient || 'configured-recipient'}`);
     console.log(`From: ${name} <${email}>`);
     console.log(`Subject: [Contact Form] ${subject || 'New Message'}`);
     console.log(`Message: ${message}`);
@@ -39,7 +39,7 @@ async function sendContactEmail({ name, email, subject, message }) {
     const mailOptions = {
       from: `"${name}" <${user}>`,
       replyTo: email,
-      to: 'support.codemerge@gmail.com',
+      to: recipient,
       subject: `CodeMerge Contact: ${subject || 'New Message'}`,
       text: `You have received a new contact submission on CodeMerge.
 
