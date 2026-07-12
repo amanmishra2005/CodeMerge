@@ -16,7 +16,6 @@ const AUTO_PLATFORMS = [
 const OTHER_PLATFORMS = [
   { key: 'codechef', label: 'CodeChef', placeholder: 'e.g. coder_cc' },
   { key: 'atcoder', label: 'AtCoder', placeholder: 'e.g. tourist' },
-  { key: 'github', label: 'GitHub', placeholder: 'e.g. torvalds' },
   { key: 'hackerearth', label: 'HackerEarth', placeholder: 'e.g. coder_he' },
   { key: 'spoj', label: 'Spoj', placeholder: 'e.g. spoj_user' },
   { key: 'topcoder', label: 'TopCoder', placeholder: 'e.g. tc_user' },
@@ -209,7 +208,7 @@ export default function PlatformLinkingPage() {
                                 required
                                 value={row.platform}
                                 onChange={(e) => handleChangeRow(row.tempId, 'platform', e.target.value)}
-                                placeholder="e.g. LeetCode, GitHub"
+                                placeholder="e.g. LeetCode, GeeksforGeeks, Codeforces"
                                 className="input-field !py-2.5 !text-sm"
                               />
                             </div>
