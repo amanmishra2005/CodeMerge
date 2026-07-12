@@ -6,11 +6,13 @@ const meta = {
   leetcode: { label: 'LeetCode', color: '#FFB454' },
   codeforces: { label: 'Codeforces', color: '#4C8DFF' },
   gfg: { label: 'GeeksforGeeks', color: '#3DDC84' },
+  geeksforgeeks: { label: 'GeeksforGeeks', color: '#3DDC84' },
   hackerrank: { label: 'HackerRank', color: '#FF5C5C' },
 };
 
 export default function PlatformCard({ platform, delay }) {
-  const m = meta[platform.platform] || { label: platform.platform, color: '#8B96AD' };
+  const platformKey = (platform.platform || '').toLowerCase().trim();
+  const m = meta[platformKey] || { label: platform.platform, color: '#8B96AD' };
 
   return (
     <motion.div
