@@ -81,6 +81,7 @@ router.get('/refresh', protect, async (req, res) => {
       leetcode: getLeetCodeStats,
       codeforces: getCodeforcesStats,
       gfg: getGfgStats,
+      geeksforgeeks: getGfgStats,
       hackerrank: getHackerRankStats,
     };
 
@@ -93,6 +94,7 @@ router.get('/refresh', protect, async (req, res) => {
           if (stats) {
             return {
               ...stats,
+              platform: p.platform,
               label: p.label || '',
               id: p._id ? p._id.toString() : '',
             };
