@@ -16,14 +16,25 @@ import {
 
 const COLORS = { easy: '#3DDC84', medium: '#FFB454', hard: '#FF5C5C' };
 
+const PLATFORM_SHORTS = {
+  leetcode: 'LeetCode',
+  codeforces: 'Codeforces',
+  gfg: 'GFG',
+  geeksforgeeks: 'GFG',
+  hackerrank: 'HackerRank',
+  codechef: 'CodeChef',
+  atcoder: 'AtCoder',
+};
+
 export default function DifficultyChart({ platforms, totals }) {
   const barData = (platforms || [])
     .filter((p) => !p.error)
     .map((p) => {
-      const platformName = p.platform.charAt(0).toUpperCase() + p.platform.slice(1);
+      const platformKey = (p.platform || '').toLowerCase().trim();
+      const shortName = PLATFORM_SHORTS[platformKey] || p.platform;
       const suffix = p.label ? ` (${p.label})` : ` (@${p.username})`;
       return {
-        name: `${platformName}${suffix}`,
+        name: `${shortName}${suffix}`,
         easy: p.easy,
         medium: p.medium,
         hard: p.hard,
@@ -56,7 +67,7 @@ export default function DifficultyChart({ platforms, totals }) {
             <ResponsiveContainer>
               <BarChart data={barData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#26314D" />
-                <XAxis dataKey="name" stroke="#8B96AD" fontSize={12} />
+                <XAxis dataKey="name" stroke="#8B96AD" fontSize={11} interval={0} />
                 <YAxis stroke="#8B96AD" fontSize={12} />
                 <Tooltip
                   contentStyle={{ background: '#131B2E', border: '1px solid #26314D', borderRadius: 8 }}

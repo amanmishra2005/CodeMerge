@@ -6,6 +6,8 @@ const getLeetCodeStats = require('../utils/platforms/leetcode');
 const getCodeforcesStats = require('../utils/platforms/codeforces');
 const getGfgStats = require('../utils/platforms/gfg');
 const getHackerRankStats = require('../utils/platforms/hackerrank');
+const getCodeChefStats = require('../utils/platforms/codechef');
+const getAtCoderStats = require('../utils/platforms/atcoder');
 
 const router = express.Router();
 
@@ -27,6 +29,12 @@ function normalizePlatforms(platforms) {
     }
     if (platforms.hackerrank && platforms.hackerrank.username) {
       list.push({ platform: 'hackerrank', username: platforms.hackerrank.username, label: 'HackerRank' });
+    }
+    if (platforms.codechef && platforms.codechef.username) {
+      list.push({ platform: 'codechef', username: platforms.codechef.username, label: 'CodeChef' });
+    }
+    if (platforms.atcoder && platforms.atcoder.username) {
+      list.push({ platform: 'atcoder', username: platforms.atcoder.username, label: 'AtCoder' });
     }
     return list;
   }
@@ -83,6 +91,8 @@ router.get('/refresh', protect, async (req, res) => {
       gfg: getGfgStats,
       geeksforgeeks: getGfgStats,
       hackerrank: getHackerRankStats,
+      codechef: getCodeChefStats,
+      atcoder: getAtCoderStats,
     };
 
     const results = await Promise.all(

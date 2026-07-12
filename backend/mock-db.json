@@ -1,0 +1,516 @@
+{
+  "users": [
+    {
+      "name": "Test User",
+      "email": "test@example.com",
+      "password": "$2a$10$os7OrpDX2O/lJCok38NMKu1Hacl.YpHVnpfHQMqZubvA5mr/o7IMu",
+      "platforms": {
+        "leetcode": {
+          "username": "test_lc"
+        },
+        "codeforces": {
+          "username": "test_cf"
+        },
+        "gfg": {
+          "username": "test_gfg"
+        },
+        "hackerrank": {
+          "username": "test_hr"
+        }
+      },
+      "lastStats": [],
+      "lastFeedback": "",
+      "lastFeedbackAt": null,
+      "_id": "kt1ld7h74wp",
+      "createdAt": "2026-07-11T05:20:15.690Z",
+      "updatedAt": "2026-07-11T05:21:20.737Z"
+    },
+    {
+      "name": "John Doe",
+      "email": "johndoe@example.com",
+      "password": "$2a$10$3BnxujRYpODFQnVch6kNp.dB73oQyh64D5b5u.pW9g3wno66PHQDa",
+      "platforms": [
+        {
+          "platform": "codeforces",
+          "username": "tourist",
+          "label": "Codeforces Main"
+        },
+        {
+          "platform": "leetcode",
+          "username": "janesmith",
+          "label": "LeetCode Main"
+        }
+      ],
+      "lastStats": [
+        {
+          "platform": "codeforces",
+          "username": "tourist",
+          "totalSolved": 3019,
+          "easy": 505,
+          "medium": 875,
+          "hard": 1367,
+          "raw": {},
+          "error": null,
+          "label": "Codeforces Main",
+          "id": ""
+        },
+        {
+          "platform": "leetcode",
+          "username": "janesmith",
+          "totalSolved": 40,
+          "easy": 32,
+          "medium": 6,
+          "hard": 2,
+          "raw": {
+            "username": "JaneSmith",
+            "submitStatsGlobal": {
+              "acSubmissionNum": [
+                {
+                  "difficulty": "All",
+                  "count": 40
+                },
+                {
+                  "difficulty": "Easy",
+                  "count": 32
+                },
+                {
+                  "difficulty": "Medium",
+                  "count": 6
+                },
+                {
+                  "difficulty": "Hard",
+                  "count": 2
+                }
+              ]
+            }
+          },
+          "error": null,
+          "label": "LeetCode Main",
+          "id": ""
+        }
+      ],
+      "lastFeedback": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 45.468666126s.",
+      "lastFeedbackAt": "2026-07-11T17:15:14.525Z",
+      "_id": "nw2qrrslwfd",
+      "createdAt": "2026-07-11T17:03:50.144Z",
+      "updatedAt": "2026-07-11T17:15:14.525Z"
+    },
+    {
+      "name": "Alice Tester",
+      "email": "alice@example.com",
+      "password": "$2a$10$hFvBreqNo1ezP6YarQhP5Ovjpj5N1gK38YIOg5lNcdrVs7XU2.78.",
+      "platforms": [
+        {
+          "platform": "LeetCode",
+          "username": "amanmishra2008",
+          "label": "",
+          "totalSolved": 0,
+          "easy": 0,
+          "medium": 0,
+          "hard": 0
+        },
+        {
+          "platform": "GeeksforGeeks",
+          "username": "amanmishra2005",
+          "label": "",
+          "totalSolved": 0,
+          "easy": 0,
+          "medium": 0,
+          "hard": 0
+        },
+        {
+          "platform": "CodeChef",
+          "username": "tourist",
+          "label": "",
+          "totalSolved": 0,
+          "easy": 0,
+          "medium": 0,
+          "hard": 0
+        },
+        {
+          "platform": "AtCoder",
+          "username": "tourist",
+          "label": "",
+          "totalSolved": 0,
+          "easy": 0,
+          "medium": 0,
+          "hard": 0
+        }
+      ],
+      "lastStats": [
+        {
+          "platform": "LeetCode",
+          "username": "amanmishra2008",
+          "totalSolved": 37,
+          "easy": 14,
+          "medium": 18,
+          "hard": 5,
+          "raw": {
+            "username": "amanmishra2008",
+            "submitStatsGlobal": {
+              "acSubmissionNum": [
+                {
+                  "difficulty": "All",
+                  "count": 37
+                },
+                {
+                  "difficulty": "Easy",
+                  "count": 14
+                },
+                {
+                  "difficulty": "Medium",
+                  "count": 18
+                },
+                {
+                  "difficulty": "Hard",
+                  "count": 5
+                }
+              ]
+            }
+          },
+          "error": null,
+          "label": "",
+          "id": ""
+        },
+        {
+          "platform": "GeeksforGeeks",
+          "username": "amanmishra2005",
+          "totalSolved": 112,
+          "easy": 58,
+          "medium": 49,
+          "hard": 5,
+          "raw": {
+            "userHandle": "amanmishra2005",
+            "total_score": 333,
+            "monthly_score": 0,
+            "total_problems_solved": 112,
+            "pod_solved_longest_streak": 0,
+            "pod_solved_global_longest_streak": 1805,
+            "pod_solved_current_streak": 0,
+            "pod_correct_submissions_count": 0,
+            "School": 0,
+            "Basic": 16,
+            "Easy": 42,
+            "Medium": 49,
+            "Hard": 5,
+            "ProgressBar": 0
+          },
+          "error": null,
+          "label": "",
+          "id": ""
+        },
+        {
+          "platform": "CodeChef",
+          "username": "tourist",
+          "totalSolved": 632,
+          "easy": 316,
+          "medium": 221,
+          "hard": 95,
+          "raw": {
+            "totalSolved": 632,
+            "source": "html_scraper"
+          },
+          "error": null,
+          "label": "",
+          "id": ""
+        },
+        {
+          "platform": "AtCoder",
+          "username": "tourist",
+          "totalSolved": 1057,
+          "easy": 529,
+          "medium": 370,
+          "hard": 158,
+          "raw": {
+            "count": 1057,
+            "rank": 4347
+          },
+          "error": null,
+          "label": "",
+          "id": ""
+        }
+      ],
+      "lastFeedback": "",
+      "lastFeedbackAt": null,
+      "_id": "8375z0ivx6x",
+      "createdAt": "2026-07-11T17:25:40.838Z",
+      "updatedAt": "2026-07-12T08:15:42.738Z"
+    },
+    {
+      "name": "Alice Tester",
+      "email": "alice_tester_fresh_99@example.com",
+      "password": "$2a$10$VMh3WBkMRYwDteF.Scsux.IagVDMdxSU0TeyTx2ufYYCa6PaYaqIa",
+      "platforms": [
+        {
+          "platform": "AtCoder",
+          "username": "atcoder_alice",
+          "label": "AtCoder Profile",
+          "totalSolved": 60,
+          "easy": 20,
+          "medium": 30,
+          "hard": 10
+        },
+        {
+          "platform": "Codeforces",
+          "username": "tourist",
+          "label": "CF tourist",
+          "totalSolved": 0,
+          "easy": 0,
+          "medium": 0,
+          "hard": 0
+        }
+      ],
+      "lastStats": [
+        {
+          "platform": "AtCoder",
+          "username": "atcoder_alice",
+          "totalSolved": 60,
+          "easy": 20,
+          "medium": 30,
+          "hard": 10,
+          "label": "AtCoder Profile",
+          "id": "",
+          "error": null
+        },
+        {
+          "platform": "codeforces",
+          "username": "tourist",
+          "totalSolved": 3019,
+          "easy": 505,
+          "medium": 875,
+          "hard": 1367,
+          "raw": {},
+          "error": null,
+          "label": "CF tourist",
+          "id": ""
+        }
+      ],
+      "lastFeedback": "Hello Alice Tester! Here is my analysis of your unified developer profile.\n\nYou have an exceptional drive for challenging algorithms, with Hard problems representing 45% of your total solved metrics. This indicates outstanding debugging capability and advanced analytical execution. Most of your progress resides on CODEFORCES (3019 solved). Setting aside a regular practice window on ATCODER (60 solved) will expose you to different problem styles.\n\nTo accelerate your preparation, here is my recommendation:\n1. Broaden your topic coverage by tackling niche categories like trie structures or segment trees.\n2. Focus on dynamic programming, depth-first search, and hash maps to solidify interview patterns.\n3. Keep track of your progress on each platform to maintain a well-rounded developer profile.\n\nYou are demonstrating great dedication. Keep solving, stay consistent, and your growth will compound!",
+      "lastFeedbackAt": "2026-07-11T17:53:38.995Z",
+      "_id": "ovlr3te90pg",
+      "createdAt": "2026-07-11T17:36:48.937Z",
+      "updatedAt": "2026-07-11T17:53:38.995Z"
+    },
+    {
+      "name": "Aman Mishra",
+      "email": "amanmishra15.08.2005@gmail.com",
+      "password": "$2a$10$lTwcvmJ4Ot4Ojudg3okmJuAu33WFCQ31M8YefwHrY1vDxEfi/zE/G",
+      "platforms": [
+        {
+          "platform": "LeetCode",
+          "username": "amanmishra2008",
+          "label": "",
+          "totalSolved": 0,
+          "easy": 0,
+          "medium": 0,
+          "hard": 0
+        },
+        {
+          "platform": "GeeksforGeeks",
+          "username": "amanmishra2005",
+          "label": "",
+          "totalSolved": 0,
+          "easy": 0,
+          "medium": 0,
+          "hard": 0
+        }
+      ],
+      "lastStats": [
+        {
+          "platform": "LeetCode",
+          "username": "amanmishra2008",
+          "totalSolved": 37,
+          "easy": 14,
+          "medium": 18,
+          "hard": 5,
+          "raw": {
+            "username": "amanmishra2008",
+            "submitStatsGlobal": {
+              "acSubmissionNum": [
+                {
+                  "difficulty": "All",
+                  "count": 37
+                },
+                {
+                  "difficulty": "Easy",
+                  "count": 14
+                },
+                {
+                  "difficulty": "Medium",
+                  "count": 18
+                },
+                {
+                  "difficulty": "Hard",
+                  "count": 5
+                }
+              ]
+            }
+          },
+          "error": null,
+          "label": "",
+          "id": ""
+        },
+        {
+          "platform": "GeeksforGeeks",
+          "username": "amanmishra2005",
+          "totalSolved": 112,
+          "easy": 58,
+          "medium": 49,
+          "hard": 5,
+          "raw": {
+            "userHandle": "amanmishra2005",
+            "total_score": 333,
+            "monthly_score": 0,
+            "total_problems_solved": 112,
+            "pod_solved_longest_streak": 0,
+            "pod_solved_global_longest_streak": 1805,
+            "pod_solved_current_streak": 0,
+            "pod_correct_submissions_count": 0,
+            "School": 0,
+            "Basic": 16,
+            "Easy": 42,
+            "Medium": 49,
+            "Hard": 5,
+            "ProgressBar": 0
+          },
+          "error": null,
+          "label": "",
+          "id": ""
+        }
+      ],
+      "lastFeedback": "Hello Aman Mishra! Here is my analysis of your unified developer profile.\n\nYou have established a highly effective balance, with Medium problems accounting for 45% of your total progress. This is the ideal distribution profile for technical coding interviews. Most of your progress resides on GEEKSFORGEEKS (112 solved). Setting aside a regular practice window on LEETCODE (37 solved) will expose you to different problem styles.\n\nTo accelerate your preparation, here is my recommendation:\n1. Challenge yourself with 1-2 Hard-level algorithmic tasks each week, focusing on dynamic programming or network flow.\n2. Focus on dynamic programming, depth-first search, and hash maps to solidify interview patterns.\n3. Keep track of your progress on each platform to maintain a well-rounded developer profile.\n\nYou are demonstrating great dedication. Keep solving, stay consistent, and your growth will compound!",
+      "lastFeedbackAt": "2026-07-12T07:33:22.760Z",
+      "_id": "5jz9ldv4dk",
+      "createdAt": "2026-07-12T07:11:41.243Z",
+      "updatedAt": "2026-07-12T07:33:59.814Z"
+    }
+  ],
+  "contacts": [
+    {
+      "name": "Aman Mishra",
+      "email": "amanmishra15.08.2005@gmail.com",
+      "subject": "bhgyuh",
+      "message": "gftygvjhb",
+      "_id": "hrfmhvdbcxu",
+      "createdAt": "2026-07-11T17:19:45.273Z",
+      "updatedAt": "2026-07-11T17:19:45.273Z"
+    },
+    {
+      "name": "Aman Mishra",
+      "email": "amanmishra15.08.2005@gmail.com",
+      "subject": "wregegn",
+      "message": "erbweven",
+      "_id": "sz7ayn3anwc",
+      "createdAt": "2026-07-11T18:10:44.753Z",
+      "updatedAt": "2026-07-11T18:10:44.753Z"
+    },
+    {
+      "name": "System Test",
+      "email": "test_sender@example.com",
+      "subject": "Real SMTP Email Dispatch Test",
+      "message": "Hello, this is a test to verify that the contact form sends a real email to support.codemerge@gmail.com using the newly added App Password.",
+      "_id": "8i8zz77wwqc",
+      "createdAt": "2026-07-11T18:23:14.948Z",
+      "updatedAt": "2026-07-11T18:23:14.948Z"
+    },
+    {
+      "name": "Gmail Authentication Test",
+      "email": "auth_tester@example.com",
+      "subject": "Final SMTP Test",
+      "message": "Hi, this is a test from the browser to confirm that using the corrected personal SMTP email sender address successfully routes emails to support.codemerge@gmail.com.",
+      "_id": "3ahe8tqno78",
+      "createdAt": "2026-07-11T18:26:45.531Z",
+      "updatedAt": "2026-07-11T18:26:45.531Z"
+    },
+    {
+      "name": "Gmail Transporter Retry",
+      "email": "retry_tester@example.com",
+      "subject": "Transporter Retry Test",
+      "message": "Hi, this is a retry test to verify SMTP sending works after simplifying Gmail transporter options.",
+      "_id": "vy0x01m3yx",
+      "createdAt": "2026-07-11T18:29:09.593Z",
+      "updatedAt": "2026-07-11T18:29:09.593Z"
+    },
+    {
+      "name": "Support Email SMTP Test",
+      "email": "support_tester@example.com",
+      "subject": "Support Account Test",
+      "message": "Hi, this is a test to verify SMTP authentication under support.codemerge@gmail.com with the simplified transporter config.",
+      "_id": "ptdk7jrx8pf",
+      "createdAt": "2026-07-11T18:32:18.548Z",
+      "updatedAt": "2026-07-11T18:32:18.548Z"
+    },
+    {
+      "name": "Owner Account SMTP Test",
+      "email": "owner_tester@example.com",
+      "subject": "Owner Account Test",
+      "message": "Hi, this is a test to verify SMTP authentication under amanmishra2005@gmail.com with the App Password.",
+      "_id": "76t03px9xg",
+      "createdAt": "2026-07-11T18:35:02.225Z",
+      "updatedAt": "2026-07-11T18:35:02.225Z"
+    },
+    {
+      "name": "MongoDB Account SMTP Test",
+      "email": "mongo_tester@example.com",
+      "subject": "MongoDB Account Test",
+      "message": "Hi, this is a test to verify SMTP authentication under mishraaman2008@gmail.com with the App Password.",
+      "_id": "16xiifad7x",
+      "createdAt": "2026-07-11T18:39:58.059Z",
+      "updatedAt": "2026-07-11T18:39:58.059Z"
+    },
+    {
+      "name": "Aman Mishra",
+      "email": "amanmishra15.08.2005@gmail.com",
+      "subject": "gvtgvhjbknm",
+      "message": "cfghvbjnm",
+      "_id": "dbxwo4vcho6",
+      "createdAt": "2026-07-11T18:45:32.092Z",
+      "updatedAt": "2026-07-11T18:45:32.092Z"
+    },
+    {
+      "name": "Aman Mishra",
+      "email": "amanmishra15.08.2005@gmail.com",
+      "subject": "tugyhjb",
+      "message": "vgujhbn",
+      "_id": "r5lbfqhs78i",
+      "createdAt": "2026-07-11T18:47:43.791Z",
+      "updatedAt": "2026-07-11T18:47:43.791Z"
+    },
+    {
+      "name": "Aman Mishra",
+      "email": "amanmishra15.08.2005@gmail.com",
+      "subject": "fgchvjb",
+      "message": " bnm",
+      "_id": "mjxs5tlwqlg",
+      "createdAt": "2026-07-11T18:49:41.426Z",
+      "updatedAt": "2026-07-11T18:49:41.426Z"
+    },
+    {
+      "name": "Test User",
+      "email": "test@example.com",
+      "subject": "Browser Test",
+      "message": "This is a test message from the browser subagent.",
+      "_id": "ldf4s7icdo",
+      "createdAt": "2026-07-11T18:54:48.825Z",
+      "updatedAt": "2026-07-11T18:54:48.825Z"
+    },
+    {
+      "name": "Aman Mishra",
+      "email": "amanmishra15.08.2005@gmail.com",
+      "subject": "gvhbjknlm",
+      "message": "fyghujkn",
+      "_id": "wcbga5bj53",
+      "createdAt": "2026-07-11T18:54:56.547Z",
+      "updatedAt": "2026-07-11T18:54:56.547Z"
+    },
+    {
+      "name": "Aman Mishra (Test)",
+      "email": "support_check@example.com",
+      "subject": "Verified SMTP Email Delivery Test",
+      "message": "Hi! This is a test confirming that the backend server has loaded the correct Google App Password jmvkpyjmauunrhya and successfully sends contact form submissions to support.codemerge@gmail.com!",
+      "_id": "cdozargh6sv",
+      "createdAt": "2026-07-12T07:30:01.227Z",
+      "updatedAt": "2026-07-12T07:30:01.227Z"
+    }
+  ]
+}

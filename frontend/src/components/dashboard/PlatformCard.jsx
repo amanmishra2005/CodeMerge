@@ -8,6 +8,8 @@ const meta = {
   gfg: { label: 'GeeksforGeeks', color: '#3DDC84' },
   geeksforgeeks: { label: 'GeeksforGeeks', color: '#3DDC84' },
   hackerrank: { label: 'HackerRank', color: '#FF5C5C' },
+  codechef: { label: 'CodeChef', color: '#F7931E' },
+  atcoder: { label: 'AtCoder', color: '#808080' },
 };
 
 export default function PlatformCard({ platform, delay }) {

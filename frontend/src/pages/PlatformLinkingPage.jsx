@@ -112,7 +112,7 @@ export default function PlatformLinkingPage() {
     try {
       // 1. Save platforms lists
       await api.put('/stats/platforms', { platforms: cleanList });
-      
+
       // 2. Fetch/refresh combined stats
       await api.get('/stats/refresh');
 
@@ -177,7 +177,10 @@ export default function PlatformLinkingPage() {
                 <AnimatePresence initial={false}>
                   {platforms.map((row, idx) => {
                     const normPlatform = (row.platform || '').toLowerCase().trim();
-                    const matchedAuto = AUTO_PLATFORMS.find(ap => ap.key === normPlatform);
+                    const matchedAuto = AUTO_PLATFORMS.find(ap => 
+                      ap.key === normPlatform || 
+                      ap.label.toLowerCase() === normPlatform
+                    );
                     const isAutomated = !!matchedAuto;
 
                     return (
@@ -190,7 +193,7 @@ export default function PlatformLinkingPage() {
                         className="overflow-hidden animate-fade-in"
                       >
                         <div className="card p-4 sm:p-5 flex flex-col relative border border-border/80 hover:border-border/100 transition-colors duration-200">
-                          
+
                           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center w-full">
                             {/* Platform Name free text input */}
                             <div className="w-full md:w-1/3">
@@ -208,7 +211,7 @@ export default function PlatformLinkingPage() {
                                 required
                                 value={row.platform}
                                 onChange={(e) => handleChangeRow(row.tempId, 'platform', e.target.value)}
-                                placeholder="e.g. LeetCode, GeeksforGeeks, Codeforces"
+                                placeholder="e.g. LeetCode, GeeksforGeeks, Codeforces, CodeChef, Atcoder, HackerRank"
                                 className="input-field !py-2.5 !text-sm"
                               />
                             </div>
