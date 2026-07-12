@@ -1,0 +1,7 @@
+# Local mock database
+backend/mock-db.json
+backend/.env
+frontend/.env
+node_modules/
+dist/
+.DS_Store
