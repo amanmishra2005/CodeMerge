@@ -82,11 +82,6 @@ export default function Footer() {
                 <a href="/#contact" className="text-muted hover:text-accent transition-colors duration-200">Contact Support</a>
               </li>
               <li>
-                <a href="/api/health" target="_blank" rel="noreferrer" className="text-muted hover:text-accent transition-colors duration-200 flex items-center gap-1">
-                  <Cpu size={11} /> API Health
-                </a>
-              </li>
-              <li>
                 <Link to="/terms" className="text-muted hover:text-accent transition-colors duration-200">Terms of Service</Link>
               </li>
               <li>
