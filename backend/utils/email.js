@@ -1,19 +1,14 @@
-const nodemailer = require('nodemailer');
+const axios = require('axios');
 
 /**
- * Sends a notification email when someone submits the contact form.
+ * Sends a notification email when someone submits the contact form using Web3Forms.
  */
 async function sendContactEmail({ name, email, subject, message }) {
-  const host = process.env.SMTP_HOST || 'smtp.gmail.com';
-  const port = parseInt(process.env.SMTP_PORT || '587', 10);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-  const recipient = process.env.SMTP_TO || user;
+  const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
 
-  if (!user || !pass) {
+  if (!accessKey) {
     console.log('--------------------------------------------------');
-    console.log('EMAIL SIMULATION (SMTP credentials not configured in backend/.env)');
-    console.log(`To: ${recipient || 'configured-recipient'}`);
+    console.log('EMAIL SIMULATION (Web3Forms access key not configured in backend/.env)');
     console.log(`From: ${name} <${email}>`);
     console.log(`Subject: [Contact Form] ${subject || 'New Message'}`);
     console.log(`Message: ${message}`);
@@ -22,43 +17,24 @@ async function sendContactEmail({ name, email, subject, message }) {
   }
 
   try {
-    const transporter = nodemailer.createTransport(
-      host === 'smtp.gmail.com'
-        ? {
-            service: 'gmail',
-            auth: { user, pass },
-          }
-        : {
-            host,
-            port,
-            secure: port === 465,
-            auth: { user, pass },
-          }
-    );
+    const response = await axios.post('https://api.web3forms.com/submit', {
+      access_key: accessKey,
+      name,
+      email,
+      subject: subject || 'New Message from CodeMerge Contact Form',
+      message,
+      from_name: 'CodeMerge Contact Form',
+    });
 
-    const mailOptions = {
-      from: `"${name}" <${user}>`,
-      replyTo: email,
-      to: recipient,
-      subject: `CodeMerge Contact: ${subject || 'New Message'}`,
-      text: `You have received a new contact submission on CodeMerge.
-
-Sender Name: ${name}
-Sender Email: ${email}
-Subject: ${subject || 'N/A'}
-
-Message:
------------------------------------------
-${message}
------------------------------------------
-      `,
-    };
-
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully:', info.messageId);
-    return true;
+    if (response.data && response.data.success) {
+      console.log('Email sent successfully via Web3Forms:', response.data.message);
+      return true;
+    } else {
+      console.error('Failed to send email via Web3Forms:', response.data?.message || 'Unknown error');
+      return false;
+    }
   } catch (error) {
-    console.error('Failed to send contact email:', error.message);
+    console.error('Failed to send contact email via Web3Forms:', error.message);
     return false;
   }
 }
