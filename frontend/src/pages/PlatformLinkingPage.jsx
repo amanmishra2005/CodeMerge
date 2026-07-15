@@ -13,6 +13,7 @@ const AUTO_PLATFORMS = [
   { key: 'hackerrank', label: 'HackerRank', color: '#FF5C5C', placeholder: 'e.g. janesmith_hr' },
   { key: 'codechef', label: 'CodeChef', color: '#F7931E', placeholder: 'e.g. coder_cc' },
   { key: 'atcoder', label: 'AtCoder', color: '#808080', placeholder: 'e.g. tourist' },
+  { key: 'github', label: 'GitHub', color: '#24292e', placeholder: 'e.g. torvalds' },
 ];
 
 const OTHER_PLATFORMS = [

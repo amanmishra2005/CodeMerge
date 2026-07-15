@@ -30,7 +30,41 @@ async function getAtCoderStats(username) {
       };
     }
   } catch (err) {
-    // Fail silently
+    // Fail silently to try fallback check below
+  }
+
+  // Fallback: If Kenkoooo fails, check if the profile exists natively on AtCoder
+  try {
+    const checkUrl = `https://atcoder.jp/users/${encodeURIComponent(username)}`;
+    await axios.get(checkUrl, {
+      timeout: 6000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
+    });
+    // Profile exists but has no Kenkoooo statistics (0 count)
+    return {
+      platform: 'atcoder',
+      username,
+      totalSolved: 0,
+      easy: 0,
+      medium: 0,
+      hard: 0,
+      raw: { count: 0, source: 'atcoder_jp_check' },
+      error: null,
+    };
+  } catch (errCheck) {
+    if (errCheck.response && errCheck.response.status === 404) {
+      return {
+        platform: 'atcoder',
+        username,
+        totalSolved: 0,
+        easy: 0,
+        medium: 0,
+        hard: 0,
+        error: 'User not found on AtCoder.',
+      };
+    }
   }
 
   return {

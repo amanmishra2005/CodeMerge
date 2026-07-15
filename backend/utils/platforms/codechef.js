@@ -29,9 +29,30 @@ async function getCodeChefStats(username) {
         raw: { totalSolved: total, source: 'html_scraper' },
         error: null,
       };
+    } else if (html.includes('problems-solved') || html.includes('Total Problems Solved')) {
+      return {
+        platform: 'codechef',
+        username,
+        totalSolved: 0,
+        easy: 0,
+        medium: 0,
+        hard: 0,
+        raw: { totalSolved: 0, source: 'html_scraper' },
+        error: null,
+      };
     }
   } catch (err) {
-    // Fail silently
+    if (err.response && err.response.status === 404) {
+      return {
+        platform: 'codechef',
+        username,
+        totalSolved: 0,
+        easy: 0,
+        medium: 0,
+        hard: 0,
+        error: 'User not found on CodeChef.',
+      };
+    }
   }
 
   return {

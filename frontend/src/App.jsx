@@ -6,6 +6,7 @@ import Register from './pages/Register.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import PlatformLinkingPage from './pages/PlatformLinkingPage.jsx';
 import AIAnalysisPage from './pages/AIAnalysisPage.jsx';
+import GitHubDashboard from './pages/GitHubDashboard.jsx';
 import TermsOfService from './pages/TermsOfService.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
@@ -39,6 +40,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <AIAnalysisPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/github"
+        element={
+          <ProtectedRoute>
+            <GitHubDashboard />
           </ProtectedRoute>
         }
       />

@@ -8,6 +8,7 @@ const getGfgStats = require('../utils/platforms/gfg');
 const getHackerRankStats = require('../utils/platforms/hackerrank');
 const getCodeChefStats = require('../utils/platforms/codechef');
 const getAtCoderStats = require('../utils/platforms/atcoder');
+const getGitHubStats = require('../utils/platforms/github');
 
 const router = express.Router();
 
@@ -35,6 +36,9 @@ function normalizePlatforms(platforms) {
     }
     if (platforms.atcoder && platforms.atcoder.username) {
       list.push({ platform: 'atcoder', username: platforms.atcoder.username, label: 'AtCoder' });
+    }
+    if (platforms.github && platforms.github.username) {
+      list.push({ platform: 'github', username: platforms.github.username, label: 'GitHub' });
     }
     return list;
   }
@@ -93,6 +97,7 @@ router.get('/refresh', protect, async (req, res) => {
       hackerrank: getHackerRankStats,
       codechef: getCodeChefStats,
       atcoder: getAtCoderStats,
+      github: getGitHubStats,
     };
 
     const results = await Promise.all(
