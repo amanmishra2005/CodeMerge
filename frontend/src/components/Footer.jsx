@@ -111,6 +111,12 @@ export default function Footer() {
                   Auto
                 </span>
               </li>
+              <li className="flex items-center gap-1">
+                Github{" "}
+                <span className="text-[9px] text-accent/80 font-mono">
+                  Auto
+                </span>
+              </li>
             </ul>
           </div>
 
