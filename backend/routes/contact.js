@@ -25,4 +25,10 @@ router.post('/', async (req, res) => {
   }
 });
 
+// @route  GET /api/contact/config
+// @desc   Public endpoint - retrieve Web3Forms access key
+router.get('/config', (req, res) => {
+  res.json({ accessKey: process.env.WEB3FORMS_ACCESS_KEY || '' });
+});
+
 module.exports = router;
