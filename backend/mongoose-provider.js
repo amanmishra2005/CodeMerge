@@ -6,7 +6,7 @@ let activeMongoose = mongooseReal;
 // Determine if we should use the mock database wrapper initially
 const mongoUri = process.env.MONGO_URI || '';
 const isMock = !mongoUri || 
-               mongoUri.includes('<username>') || 
+               mongoUri.includes('<') || 
                mongoUri.includes('your_mongodb_uri') || 
                process.env.USE_MOCK_DB === 'true';
 
@@ -16,6 +16,10 @@ if (isMock) {
 } else {
   console.log("Production Mongoose: Active (connecting to real MongoDB).");
 }
+
+mongooseReal.connection.on('error', (err) => {
+  console.error(`MongoDB connection error event: ${err.message}`);
+});
 
 function isFromApplication() {
   const stack = new Error().stack;
