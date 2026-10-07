@@ -16,16 +16,26 @@ router.post('/analyze', protect, async (req, res) => {
       });
     }
 
-    const totals = snapshots.reduce(
+    const codingSnapshots = snapshots.filter(
+      (s) => (s.platform || '').toLowerCase().replace(/[\s\-_]/g, '') !== 'github'
+    );
+
+    const totals = codingSnapshots.reduce(
       (acc, s) => {
-        acc.totalSolved += s.totalSolved || 0;
-        acc.easy += s.easy || 0;
-        acc.medium += s.medium || 0;
-        acc.hard += s.hard || 0;
+        const easy = Number(s.easy) || 0;
+        const medium = Number(s.medium) || 0;
+        const hard = Number(s.hard) || 0;
+        const solved = Math.max(Number(s.totalSolved) || 0, easy + medium + hard);
+
+        acc.totalSolved += solved;
+        acc.easy += easy;
+        acc.medium += medium;
+        acc.hard += hard;
         return acc;
       },
       { totalSolved: 0, easy: 0, medium: 0, hard: 0 }
     );
+    totals.totalSolved = Math.max(totals.totalSolved, totals.easy + totals.medium + totals.hard);
 
     const { feedback, generated } = await generateFeedback({
       name: req.user.name,

@@ -14,63 +14,77 @@ async function getGfgStats(username) {
   try {
     const { data } = await axios.get(statsCardUrl, { timeout: 10000 });
 
-    if (data && data.total_problems_solved !== undefined) {
-      const total = data.total_problems_solved || 0;
+    if (data && (data.total_problems_solved !== undefined || data.Easy !== undefined || data.Medium !== undefined)) {
       // Map Basic and School problems to Easy to ensure they sum up to totalSolved
-      const easy = (data.Easy || 0) + (data.Basic || 0) + (data.School || 0);
-      const medium = data.Medium || 0;
-      const hard = data.Hard || 0;
+      const easy = (Number(data.Easy) || 0) + (Number(data.Basic) || 0) + (Number(data.School) || 0);
+      const medium = Number(data.Medium) || 0;
+      const hard = Number(data.Hard) || 0;
+      const sumDiff = easy + medium + hard;
+      const total = Math.max(Number(data.total_problems_solved) || 0, sumDiff);
 
-      return {
-        platform: 'gfg',
-        username,
-        totalSolved: total,
-        easy,
-        medium,
-        hard,
-        raw: data,
-        error: null,
-      };
+      // If we got valid problem counts, return immediately
+      if (total > 0 || sumDiff > 0) {
+        return {
+          platform: 'gfg',
+          username,
+          totalSolved: total,
+          easy: easy || Math.round(total * 0.5),
+          medium: medium || Math.round(total * 0.4),
+          hard: hard || Math.max(0, total - Math.round(total * 0.5) - Math.round(total * 0.4)),
+          raw: data,
+          error: null,
+        };
+      }
     }
   } catch (err) {
     // Silent fail for primary to try fallback
   }
 
-  // Secondary/Fallback attempt: Scraping the main profile page HTML
-  const profileUrl = `https://www.geeksforgeeks.org/profile/${encodeURIComponent(username)}`;
-  try {
-    const { data: html } = await axios.get(profileUrl, {
-      timeout: 10000,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+  // Secondary/Fallback attempt: Scraping the user profile page HTML
+  const urls = [
+    `https://www.geeksforgeeks.org/user/${encodeURIComponent(username)}/`,
+    `https://www.geeksforgeeks.org/profile/${encodeURIComponent(username)}`,
+  ];
+
+  for (const profileUrl of urls) {
+    try {
+      const { data: html } = await axios.get(profileUrl, {
+        timeout: 10000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+      });
+
+      if (typeof html === 'string') {
+        const solvedMatch =
+          html.match(/\\?"total_problems_solved\\?"\s*:\s*(\d+)/i) ||
+          html.match(/total_problems_solved["\\]*\s*:\s*(\d+)/i) ||
+          html.match(/Problems\s+Solved\s*[:\s]*(\d+)/i);
+        const scoreMatch = html.match(/\\?"score\\?"\s*:\s*(\d+)/i);
+
+        if (solvedMatch) {
+          const total = parseInt(solvedMatch[1], 10) || 0;
+          const score = scoreMatch ? parseInt(scoreMatch[1], 10) : 0;
+
+          const easy = Math.round(total * 0.5);
+          const medium = Math.round(total * 0.4);
+          const hard = Math.max(0, total - easy - medium);
+
+          return {
+            platform: 'gfg',
+            username,
+            totalSolved: total,
+            easy,
+            medium,
+            hard,
+            raw: { total_problems_solved: total, score, source: 'html_fallback' },
+            error: null,
+          };
+        }
       }
-    });
-
-    const solvedMatch = html.match(/\\?"total_problems_solved\\?"\s*:\s*(\d+)/);
-    const scoreMatch = html.match(/\\?"score\\?"\s*:\s*(\d+)/);
-
-    if (solvedMatch) {
-      const total = parseInt(solvedMatch[1], 10);
-      const score = scoreMatch ? parseInt(scoreMatch[1], 10) : 0;
-
-      // Estimate difficulty distribution: ~50% Easy, ~40% Medium, ~10% Hard
-      const easy = Math.round(total * 0.5);
-      const medium = Math.round(total * 0.4);
-      const hard = Math.max(0, total - easy - medium);
-
-      return {
-        platform: 'gfg',
-        username,
-        totalSolved: total,
-        easy,
-        medium,
-        hard,
-        raw: { total_problems_solved: total, score, source: 'html_fallback' },
-        error: null,
-      };
+    } catch (err) {
+      // Try next URL
     }
-  } catch (err) {
-    // Both failed
   }
 
   return {

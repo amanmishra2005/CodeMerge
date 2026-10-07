@@ -20,13 +20,21 @@ async function getCodeforcesStats(handle) {
     });
 
     if (data.status !== 'OK') {
-      return { platform: 'codeforces', username: handle, error: 'User not found on Codeforces' };
+      return {
+        platform: 'codeforces',
+        username: handle,
+        totalSolved: 0,
+        easy: 0,
+        medium: 0,
+        hard: 0,
+        error: 'User not found on Codeforces',
+      };
     }
 
     const solvedSet = new Map();
-    for (const sub of data.result) {
-      if (sub.verdict === 'OK') {
-        const key = `${sub.problem.contestId || 'gym'}-${sub.problem.index}`;
+    for (const sub of (data.result || [])) {
+      if (sub && sub.verdict === 'OK' && sub.problem) {
+        const key = `${sub.problem.contestId || sub.problem.problemsetName || 'prob'}-${sub.problem.index || sub.problem.name || '0'}`;
         if (!solvedSet.has(key)) {
           solvedSet.set(key, sub.problem.rating || null);
         }
@@ -44,10 +52,18 @@ async function getCodeforcesStats(handle) {
       else hard += 1;
     }
 
+    const totalSolved = solvedSet.size;
+    // If all solved problems were unrated but user has solved problems, provide a sensible breakdown
+    if (totalSolved > 0 && easy + medium + hard === 0) {
+      easy = Math.round(totalSolved * 0.5);
+      medium = Math.round(totalSolved * 0.35);
+      hard = Math.max(0, totalSolved - easy - medium);
+    }
+
     return {
       platform: 'codeforces',
       username: handle,
-      totalSolved: solvedSet.size,
+      totalSolved,
       easy,
       medium,
       hard,

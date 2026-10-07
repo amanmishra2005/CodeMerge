@@ -22,8 +22,12 @@ export default function Dashboard() {
     if (showLoading) setLoading(true);
     try {
       const res = await api.get('/stats/me');
-      setPlatforms(res.data.platforms || []);
+      const plats = res.data.platforms || [];
+      setPlatforms(plats);
       setTotals(res.data.totals || {});
+      if (plats.length === 0 && user?.platforms?.length > 0) {
+        handleSync();
+      }
     } catch (err) {
       console.error('Failed to load stats:', err);
     } finally {
@@ -48,7 +52,10 @@ export default function Dashboard() {
     }
   };
 
-  const codingPlatforms = platforms.filter(p => p.platform.toLowerCase() !== 'github');
+  const codingPlatforms = platforms.filter(p => {
+    const key = (p.platform || '').toLowerCase().replace(/[\s\-_]/g, '');
+    return key !== 'github';
+  });
   const hasCodingStats = codingPlatforms.length > 0;
 
   return (

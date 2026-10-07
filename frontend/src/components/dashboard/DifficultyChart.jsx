@@ -26,25 +26,38 @@ const PLATFORM_SHORTS = {
   atcoder: 'AtCoder',
 };
 
+function normalizeKey(str) {
+  if (!str) return '';
+  const clean = str.toLowerCase().replace(/[\s\-_]/g, '');
+  if (clean === 'geeksforgeek') return 'gfg';
+  return clean;
+}
+
 export default function DifficultyChart({ platforms, totals }) {
   const barData = (platforms || [])
-    .filter((p) => !p.error)
+    .filter((p) => {
+      const easy = Number(p.easy) || 0;
+      const medium = Number(p.medium) || 0;
+      const hard = Number(p.hard) || 0;
+      const total = Math.max(Number(p.totalSolved) || 0, easy + medium + hard);
+      return total > 0;
+    })
     .map((p) => {
-      const platformKey = (p.platform || '').toLowerCase().trim();
+      const platformKey = normalizeKey(p.platform);
       const shortName = PLATFORM_SHORTS[platformKey] || p.platform;
       const suffix = p.label ? ` (${p.label})` : ` (@${p.username})`;
       return {
         name: `${shortName}${suffix}`,
-        easy: p.easy,
-        medium: p.medium,
-        hard: p.hard,
+        easy: Number(p.easy) || 0,
+        medium: Number(p.medium) || 0,
+        hard: Number(p.hard) || 0,
       };
     });
 
   const pieData = [
-    { name: 'Easy', value: totals?.easy || 0, color: COLORS.easy },
-    { name: 'Medium', value: totals?.medium || 0, color: COLORS.medium },
-    { name: 'Hard', value: totals?.hard || 0, color: COLORS.hard },
+    { name: 'Easy', value: Number(totals?.easy) || 0, color: COLORS.easy },
+    { name: 'Medium', value: Number(totals?.medium) || 0, color: COLORS.medium },
+    { name: 'Hard', value: Number(totals?.hard) || 0, color: COLORS.hard },
   ];
 
   return (

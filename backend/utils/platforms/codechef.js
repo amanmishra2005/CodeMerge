@@ -12,7 +12,12 @@ async function getCodeChefStats(username) {
       }
     });
 
-    const solvedMatch = html.match(/Problems\s+Solved:\s*(\d+)/i);
+    const solvedMatch =
+      html.match(/Total\s+Problems\s+Solved:\s*(\d+)/i) ||
+      html.match(/Problems\s+Solved:\s*(\d+)/i) ||
+      html.match(/Fully\s+Solved\s*\((\d+)\)/i) ||
+      html.match(/problems-solved[^>]*>(\d+)</i);
+
     if (solvedMatch) {
       const total = parseInt(solvedMatch[1], 10) || 0;
       const easy = Math.round(total * 0.5);
@@ -29,7 +34,7 @@ async function getCodeChefStats(username) {
         raw: { totalSolved: total, source: 'html_scraper' },
         error: null,
       };
-    } else if (html.includes('problems-solved') || html.includes('Total Problems Solved')) {
+    } else if (html.includes('problems-solved') || html.includes('Total Problems Solved') || html.includes('Problems Solved')) {
       return {
         platform: 'codechef',
         username,

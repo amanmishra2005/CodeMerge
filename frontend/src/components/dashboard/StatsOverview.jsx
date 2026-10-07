@@ -5,14 +5,23 @@ import { Trophy, Zap, BarChart2, Flame } from 'lucide-react';
 function useCountUp(target) {
   const [value, setValue] = useState(0);
   useEffect(() => {
+    const numTarget = Math.max(0, Math.round(Number(target) || 0));
+    if (numTarget === 0) {
+      setValue(0);
+      return;
+    }
     let start = null;
     const duration = 1200;
     let raf;
     const step = (ts) => {
       if (!start) start = ts;
       const progress = Math.min((ts - start) / duration, 1);
-      setValue(Math.floor(progress * target));
-      if (progress < 1) raf = requestAnimationFrame(step);
+      setValue(Math.floor(progress * numTarget));
+      if (progress < 1) {
+        raf = requestAnimationFrame(step);
+      } else {
+        setValue(numTarget);
+      }
     };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
@@ -42,12 +51,17 @@ function StatCard({ icon: Icon, label, value, color, delay }) {
 
 export default function StatsOverview({ totals }) {
   const t = totals || { totalSolved: 0, easy: 0, medium: 0, hard: 0 };
+  const easy = Number(t.easy) || 0;
+  const medium = Number(t.medium) || 0;
+  const hard = Number(t.hard) || 0;
+  const totalSolved = Math.max(Number(t.totalSolved) || 0, easy + medium + hard);
+
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <StatCard icon={Trophy} label="Total solved" value={t.totalSolved} color="#4C8DFF" delay={0} />
-      <StatCard icon={Zap} label="Easy solved" value={t.easy} color="#3DDC84" delay={0.08} />
-      <StatCard icon={BarChart2} label="Medium solved" value={t.medium} color="#FFB454" delay={0.16} />
-      <StatCard icon={Flame} label="Hard solved" value={t.hard} color="#FF5C5C" delay={0.24} />
+      <StatCard icon={Trophy} label="Total solved" value={totalSolved} color="#4C8DFF" delay={0} />
+      <StatCard icon={Zap} label="Easy solved" value={easy} color="#3DDC84" delay={0.08} />
+      <StatCard icon={BarChart2} label="Medium solved" value={medium} color="#FFB454" delay={0.16} />
+      <StatCard icon={Flame} label="Hard solved" value={hard} color="#FF5C5C" delay={0.24} />
     </div>
   );
 }

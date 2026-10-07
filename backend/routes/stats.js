@@ -12,6 +12,31 @@ const getGitHubStats = require('../utils/platforms/github');
 
 const router = express.Router();
 
+// Helper to normalize platform name strings for lookup
+function normalizePlatformKey(name) {
+  if (!name) return '';
+  const clean = name.toLowerCase().replace(/[\s\-_]/g, '');
+  if (clean === 'leetcode' || clean === 'lc') return 'leetcode';
+  if (clean === 'codeforces' || clean === 'cf') return 'codeforces';
+  if (clean === 'gfg' || clean === 'geeksforgeeks' || clean === 'geeksforgeek') return 'gfg';
+  if (clean === 'codechef' || clean === 'cc') return 'codechef';
+  if (clean === 'hackerrank' || clean === 'hr') return 'hackerrank';
+  if (clean === 'atcoder' || clean === 'ac') return 'atcoder';
+  if (clean === 'github' || clean === 'gh') return 'github';
+  return clean;
+}
+
+// Canonical display labels for known platforms
+const PLATFORM_CANONICAL_LABELS = {
+  leetcode: 'LeetCode',
+  codeforces: 'Codeforces',
+  gfg: 'GeeksforGeeks',
+  hackerrank: 'HackerRank',
+  codechef: 'CodeChef',
+  atcoder: 'AtCoder',
+  github: 'GitHub',
+};
+
 // Helper to normalize platforms object into an array for legacy accounts
 function normalizePlatforms(platforms) {
   if (Array.isArray(platforms)) {
@@ -19,52 +44,163 @@ function normalizePlatforms(platforms) {
   }
   if (platforms && typeof platforms === 'object') {
     const list = [];
-    if (platforms.leetcode && platforms.leetcode.username) {
-      list.push({ platform: 'leetcode', username: platforms.leetcode.username, label: 'LeetCode' });
-    }
-    if (platforms.codeforces && platforms.codeforces.username) {
-      list.push({ platform: 'codeforces', username: platforms.codeforces.username, label: 'Codeforces' });
-    }
-    if (platforms.gfg && platforms.gfg.username) {
-      list.push({ platform: 'gfg', username: platforms.gfg.username, label: 'GeeksforGeeks' });
-    }
-    if (platforms.hackerrank && platforms.hackerrank.username) {
-      list.push({ platform: 'hackerrank', username: platforms.hackerrank.username, label: 'HackerRank' });
-    }
-    if (platforms.codechef && platforms.codechef.username) {
-      list.push({ platform: 'codechef', username: platforms.codechef.username, label: 'CodeChef' });
-    }
-    if (platforms.atcoder && platforms.atcoder.username) {
-      list.push({ platform: 'atcoder', username: platforms.atcoder.username, label: 'AtCoder' });
-    }
-    if (platforms.github && platforms.github.username) {
-      list.push({ platform: 'github', username: platforms.github.username, label: 'GitHub' });
+    const keys = ['leetcode', 'codeforces', 'gfg', 'geeksforgeeks', 'hackerrank', 'codechef', 'atcoder', 'github'];
+    for (const k of keys) {
+      const val = platforms[k];
+      if (val) {
+        const username = typeof val === 'string' ? val : val.username;
+        if (username) {
+          const normKey = normalizePlatformKey(k);
+          const label = PLATFORM_CANONICAL_LABELS[normKey] || k;
+          list.push({ platform: label, username, label: typeof val === 'object' ? val.label || '' : '' });
+        }
+      }
     }
     return list;
   }
   return [];
 }
 
+const fetchers = {
+  leetcode: getLeetCodeStats,
+  codeforces: getCodeforcesStats,
+  gfg: getGfgStats,
+  hackerrank: getHackerRankStats,
+  codechef: getCodeChefStats,
+  atcoder: getAtCoderStats,
+  github: getGitHubStats,
+};
+
+// Core helper to fetch stats for all platforms of a user and compute totals
+async function executeRefreshForUser(user) {
+  const platforms = user.platforms || [];
+
+  const results = await Promise.all(
+    platforms.map(async (p) => {
+      if (!p.username) return null;
+      const key = normalizePlatformKey(p.platform);
+      const fetcher = fetchers[key];
+
+      if (fetcher) {
+        try {
+          const stats = await fetcher(p.username);
+          if (stats) {
+            const isGitHub = key === 'github';
+            const easy = Number(stats.easy) || Number(p.easy) || 0;
+            const medium = Number(stats.medium) || Number(p.medium) || 0;
+            const hard = Number(stats.hard) || Number(p.hard) || 0;
+            const sumDiff = easy + medium + hard;
+            const totalSolved = isGitHub
+              ? 0
+              : Math.max(Number(stats.totalSolved) || Number(p.totalSolved) || 0, sumDiff);
+
+            return {
+              ...stats,
+              platform: PLATFORM_CANONICAL_LABELS[key] || p.platform,
+              label: p.label || '',
+              id: p._id ? p._id.toString() : '',
+              totalSolved,
+              easy,
+              medium,
+              hard,
+              error: stats.error || null,
+            };
+          }
+        } catch (fetchErr) {
+          const easy = Number(p.easy) || 0;
+          const medium = Number(p.medium) || 0;
+          const hard = Number(p.hard) || 0;
+          return {
+            platform: PLATFORM_CANONICAL_LABELS[key] || p.platform,
+            username: p.username,
+            totalSolved: Math.max(Number(p.totalSolved) || 0, easy + medium + hard),
+            easy,
+            medium,
+            hard,
+            label: p.label || '',
+            id: p._id ? p._id.toString() : '',
+            error: fetchErr.message || 'Could not fetch stats.',
+          };
+        }
+        return null;
+      } else {
+        // Custom platform - return manually entered stats
+        const easy = Number(p.easy) || 0;
+        const medium = Number(p.medium) || 0;
+        const hard = Number(p.hard) || 0;
+        const totalSolved = Math.max(Number(p.totalSolved) || 0, easy + medium + hard);
+        return {
+          platform: p.platform,
+          username: p.username,
+          totalSolved,
+          easy,
+          medium,
+          hard,
+          label: p.label || '',
+          id: p._id ? p._id.toString() : '',
+          error: null,
+        };
+      }
+    })
+  );
+
+  const snapshots = results.filter(Boolean);
+  user.lastStats = snapshots;
+  await user.save();
+
+  return computeTotalsForSnapshots(snapshots);
+}
+
+// Calculate total problems solved and difficulty breakdown across coding platforms
+function computeTotalsForSnapshots(snapshots) {
+  const codingSnapshots = (snapshots || []).filter(
+    (s) => normalizePlatformKey(s.platform) !== 'github'
+  );
+
+  const totals = codingSnapshots.reduce(
+    (acc, s) => {
+      const easy = Number(s.easy) || 0;
+      const medium = Number(s.medium) || 0;
+      const hard = Number(s.hard) || 0;
+      const solved = Math.max(Number(s.totalSolved) || 0, easy + medium + hard);
+
+      acc.totalSolved += solved;
+      acc.easy += easy;
+      acc.medium += medium;
+      acc.hard += hard;
+      return acc;
+    },
+    { totalSolved: 0, easy: 0, medium: 0, hard: 0 }
+  );
+
+  totals.totalSolved = Math.max(totals.totalSolved, totals.easy + totals.medium + totals.hard);
+  return { platforms: snapshots, totals };
+}
+
 // @route  PUT /api/stats/platforms
 // @desc   Save/update linked platform usernames for the logged-in user
 router.put('/platforms', protect, async (req, res) => {
   try {
-    const { platforms } = req.body;
+    let platformsInput = req.body.platforms !== undefined ? req.body.platforms : req.body;
 
-    if (!Array.isArray(platforms)) {
-      return res.status(400).json({ message: 'Platforms must be an array' });
+    if (!Array.isArray(platformsInput)) {
+      platformsInput = normalizePlatforms(platformsInput);
     }
 
-    req.user.platforms = platforms
-      .map((p) => ({
-        platform: (p.platform || '').trim(),
-        username: (p.username || '').trim(),
-        label: (p.label || '').trim(),
-        totalSolved: Number(p.totalSolved) || 0,
-        easy: Number(p.easy) || 0,
-        medium: Number(p.medium) || 0,
-        hard: Number(p.hard) || 0
-      }))
+    req.user.platforms = platformsInput
+      .map((p) => {
+        const normKey = normalizePlatformKey(p.platform);
+        const canonLabel = PLATFORM_CANONICAL_LABELS[normKey] || (p.platform || '').trim();
+        return {
+          platform: canonLabel,
+          username: (p.username || '').trim(),
+          label: (p.label || '').trim(),
+          totalSolved: Number(p.totalSolved) || 0,
+          easy: Number(p.easy) || 0,
+          medium: Number(p.medium) || 0,
+          hard: Number(p.hard) || 0,
+        };
+      })
       .filter((p) => p.platform && p.username);
 
     await req.user.save();
@@ -87,75 +223,15 @@ router.get('/refresh', protect, async (req, res) => {
       await req.user.save();
     }
 
-    const platforms = req.user.platforms || [];
-
-    const fetchers = {
-      leetcode: getLeetCodeStats,
-      codeforces: getCodeforcesStats,
-      gfg: getGfgStats,
-      geeksforgeeks: getGfgStats,
-      hackerrank: getHackerRankStats,
-      codechef: getCodeChefStats,
-      atcoder: getAtCoderStats,
-      github: getGitHubStats,
-    };
-
-    const results = await Promise.all(
-      platforms.map(async (p) => {
-        if (!p.username) return null;
-        const fetcher = fetchers[p.platform.toLowerCase()];
-        if (fetcher) {
-          const stats = await fetcher(p.username);
-          if (stats) {
-            return {
-              ...stats,
-              platform: p.platform,
-              label: p.label || '',
-              id: p._id ? p._id.toString() : '',
-            };
-          }
-          return null;
-        } else {
-          // Custom platform - return manually entered stats
-          return {
-            platform: p.platform,
-            username: p.username,
-            totalSolved: p.totalSolved || 0,
-            easy: p.easy || 0,
-            medium: p.medium || 0,
-            hard: p.hard || 0,
-            label: p.label || '',
-            id: p._id ? p._id.toString() : '',
-            error: null
-          };
-        }
-      })
-    );
-
-    const snapshots = results.filter(Boolean);
-
-    req.user.lastStats = snapshots;
-    await req.user.save();
-
-    const totals = snapshots.reduce(
-      (acc, s) => {
-        acc.totalSolved += s.totalSolved || 0;
-        acc.easy += s.easy || 0;
-        acc.medium += s.medium || 0;
-        acc.hard += s.hard || 0;
-        return acc;
-      },
-      { totalSolved: 0, easy: 0, medium: 0, hard: 0 }
-    );
-
-    res.json({ platforms: snapshots, totals });
+    const { platforms, totals } = await executeRefreshForUser(req.user);
+    res.json({ platforms, totals });
   } catch (err) {
     res.status(500).json({ message: 'Failed to refresh stats', error: err.message });
   }
 });
 
 // @route  GET /api/stats/me
-// @desc   Return the last saved stats snapshot without re-fetching
+// @desc   Return the last saved stats snapshot without re-fetching, or auto-refresh if empty
 router.get('/me', protect, async (req, res) => {
   try {
     let migrated = false;
@@ -167,18 +243,35 @@ router.get('/me', protect, async (req, res) => {
       await req.user.save();
     }
 
-    const snapshots = req.user.lastStats || [];
-    const totals = snapshots.reduce(
-      (acc, s) => {
-        acc.totalSolved += s.totalSolved || 0;
-        acc.easy += s.easy || 0;
-        acc.medium += s.medium || 0;
-        acc.hard += s.hard || 0;
-        return acc;
-      },
-      { totalSolved: 0, easy: 0, medium: 0, hard: 0 }
-    );
-    res.json({ platforms: snapshots, totals });
+    const rawSnapshots = req.user.lastStats || [];
+    const platforms = req.user.platforms || [];
+
+    // If user has linked platforms but no stats snapshot exists yet, automatically refresh
+    if (rawSnapshots.length === 0 && platforms.length > 0) {
+      const refreshed = await executeRefreshForUser(req.user);
+      return res.json(refreshed);
+    }
+
+    // Ensure snapshots have properly calculated non-zero totalSolved
+    const cleanSnapshots = rawSnapshots.map((s) => {
+      const isGH = normalizePlatformKey(s.platform) === 'github';
+      const easy = Number(s.easy) || 0;
+      const medium = Number(s.medium) || 0;
+      const hard = Number(s.hard) || 0;
+      const sumDiff = easy + medium + hard;
+      const totalSolved = isGH ? 0 : Math.max(Number(s.totalSolved) || 0, sumDiff);
+
+      return {
+        ...s,
+        totalSolved,
+        easy,
+        medium,
+        hard,
+      };
+    });
+
+    const { totals } = computeTotalsForSnapshots(cleanSnapshots);
+    res.json({ platforms: cleanSnapshots, totals });
   } catch (err) {
     res.status(500).json({ message: 'Failed to load stats', error: err.message });
   }

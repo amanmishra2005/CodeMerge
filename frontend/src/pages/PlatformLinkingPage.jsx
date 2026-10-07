@@ -31,6 +31,27 @@ const MERGING_STEPS = [
   'All stats merged and ready!'
 ];
 
+function findAutoPlatform(name) {
+  if (!name) return null;
+  const clean = name.toLowerCase().replace(/[\s\-_]/g, '');
+  return AUTO_PLATFORMS.find((ap) => {
+    const keyClean = ap.key.toLowerCase().replace(/[\s\-_]/g, '');
+    const labelClean = ap.label.toLowerCase().replace(/[\s\-_]/g, '');
+    return (
+      clean === keyClean ||
+      clean === labelClean ||
+      (clean === 'gfg' && ap.key === 'gfg') ||
+      (clean === 'geeksforgeek' && ap.key === 'gfg') ||
+      (clean === 'lc' && ap.key === 'leetcode') ||
+      (clean === 'cf' && ap.key === 'codeforces') ||
+      (clean === 'cc' && ap.key === 'codechef') ||
+      (clean === 'hr' && ap.key === 'hackerrank') ||
+      (clean === 'ac' && ap.key === 'atcoder') ||
+      (clean === 'gh' && ap.key === 'github')
+    );
+  });
+}
+
 export default function PlatformLinkingPage() {
   const [platforms, setPlatforms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,18 +67,27 @@ export default function PlatformLinkingPage() {
       .then((res) => {
         const list = res.data.user?.platforms || [];
         if (list.length > 0) {
-          setPlatforms(list.map(p => ({
-            ...p,
-            platform: p.platform.charAt(0).toUpperCase() + p.platform.slice(1),
-            tempId: Math.random().toString()
-          })));
+          setPlatforms(
+            list.map((p) => {
+              const matched = findAutoPlatform(p.platform);
+              return {
+                ...p,
+                platform: matched ? matched.label : p.platform,
+                tempId: Math.random().toString(),
+              };
+            })
+          );
         } else {
           // default with one empty row
-          setPlatforms([{ platform: 'LeetCode', username: '', label: '', totalSolved: 0, easy: 0, medium: 0, hard: 0, tempId: Math.random().toString() }]);
+          setPlatforms([
+            { platform: 'LeetCode', username: '', label: '', totalSolved: 0, easy: 0, medium: 0, hard: 0, tempId: Math.random().toString() },
+          ]);
         }
       })
       .catch(() => {
-        setPlatforms([{ platform: 'LeetCode', username: '', label: '', totalSolved: 0, easy: 0, medium: 0, hard: 0, tempId: Math.random().toString() }]);
+        setPlatforms([
+          { platform: 'LeetCode', username: '', label: '', totalSolved: 0, easy: 0, medium: 0, hard: 0, tempId: Math.random().toString() },
+        ]);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -68,7 +98,7 @@ export default function PlatformLinkingPage() {
     if (submitting) {
       if (stepIndex < MERGING_STEPS.length - 1) {
         timer = setTimeout(() => {
-          setStepIndex(prev => prev + 1);
+          setStepIndex((prev) => prev + 1);
         }, 1200);
       }
     } else {
@@ -86,7 +116,9 @@ export default function PlatformLinkingPage() {
 
   const handleRemoveRow = (tempId) => {
     if (platforms.length === 1) {
-      setPlatforms([{ platform: 'LeetCode', username: '', label: '', totalSolved: 0, easy: 0, medium: 0, hard: 0, tempId: Math.random().toString() }]);
+      setPlatforms([
+        { platform: 'LeetCode', username: '', label: '', totalSolved: 0, easy: 0, medium: 0, hard: 0, tempId: Math.random().toString() },
+      ]);
       return;
     }
     setPlatforms(platforms.filter((p) => p.tempId !== tempId));
@@ -115,7 +147,11 @@ export default function PlatformLinkingPage() {
       await api.put('/stats/platforms', { platforms: cleanList });
 
       // 2. Fetch/refresh combined stats
-      await api.get('/stats/refresh');
+      try {
+        await api.get('/stats/refresh');
+      } catch (refreshErr) {
+        console.warn('Initial refresh warning:', refreshErr);
+      }
 
       // Add a slight delay at the end step for effect
       setTimeout(() => {
@@ -161,6 +197,16 @@ export default function PlatformLinkingPage() {
           </div>
         ) : (
           <div className="relative">
+            {/* Datalist for autocomplete */}
+            <datalist id="platform-options">
+              {AUTO_PLATFORMS.map((ap) => (
+                <option key={ap.key} value={ap.label} />
+              ))}
+              {OTHER_PLATFORMS.map((op) => (
+                <option key={op.key} value={op.label} />
+              ))}
+            </datalist>
+
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
                 <motion.div
@@ -176,12 +222,8 @@ export default function PlatformLinkingPage() {
               {/* Dynamic Profiles Rows Container */}
               <div className="space-y-4">
                 <AnimatePresence initial={false}>
-                  {platforms.map((row, idx) => {
-                    const normPlatform = (row.platform || '').toLowerCase().trim();
-                    const matchedAuto = AUTO_PLATFORMS.find(ap => 
-                      ap.key === normPlatform || 
-                      ap.label.toLowerCase() === normPlatform
-                    );
+                  {platforms.map((row) => {
+                    const matchedAuto = findAutoPlatform(row.platform);
                     const isAutomated = !!matchedAuto;
 
                     return (
@@ -194,9 +236,8 @@ export default function PlatformLinkingPage() {
                         className="overflow-hidden animate-fade-in"
                       >
                         <div className="card p-4 sm:p-5 flex flex-col relative border border-border/80 hover:border-border/100 transition-colors duration-200">
-
                           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center w-full">
-                            {/* Platform Name free text input */}
+                            {/* Platform Name input */}
                             <div className="w-full md:w-1/3">
                               <div className="flex items-center justify-between mb-1.5">
                                 <label className="block text-xs font-semibold text-muted uppercase tracking-wider">
@@ -210,9 +251,10 @@ export default function PlatformLinkingPage() {
                               </div>
                               <input
                                 required
+                                list="platform-options"
                                 value={row.platform}
                                 onChange={(e) => handleChangeRow(row.tempId, 'platform', e.target.value)}
-                                placeholder="e.g. LeetCode, GeeksforGeeks, Codeforces, CodeChef, Atcoder, HackerRank"
+                                placeholder="e.g. LeetCode, GeeksforGeeks, Codeforces..."
                                 className="input-field !py-2.5 !text-sm"
                               />
                             </div>

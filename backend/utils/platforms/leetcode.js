@@ -37,13 +37,21 @@ async function getLeetCodeStats(username) {
 
     const matched = data && data.data && data.data.matchedUser;
     if (!matched) {
-      return { platform: 'leetcode', username, error: 'User not found on LeetCode' };
+      return {
+        platform: 'leetcode',
+        username,
+        totalSolved: 0,
+        easy: 0,
+        medium: 0,
+        hard: 0,
+        error: 'User not found on LeetCode',
+      };
     }
 
-    const counts = matched.submitStatsGlobal.acSubmissionNum;
+    const counts = (matched.submitStatsGlobal && matched.submitStatsGlobal.acSubmissionNum) || [];
     const find = (label) => {
       const item = counts.find((c) => c.difficulty === label);
-      return item ? item.count : 0;
+      return item ? Number(item.count) || 0 : 0;
     };
 
     const easy = find('Easy');
@@ -51,10 +59,12 @@ async function getLeetCodeStats(username) {
     const hard = find('Hard');
     const total = find('All');
 
+    const totalSolved = total || (easy + medium + hard);
+
     return {
       platform: 'leetcode',
       username,
-      totalSolved: total || easy + medium + hard,
+      totalSolved: Math.max(totalSolved, easy + medium + hard),
       easy,
       medium,
       hard,

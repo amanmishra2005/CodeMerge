@@ -12,9 +12,23 @@ const meta = {
   atcoder: { label: 'AtCoder', color: '#808080' },
 };
 
+function normalizeKey(str) {
+  if (!str) return '';
+  const clean = str.toLowerCase().replace(/[\s\-_]/g, '');
+  if (clean === 'geeksforgeek') return 'gfg';
+  return clean;
+}
+
 export default function PlatformCard({ platform, delay }) {
-  const platformKey = (platform.platform || '').toLowerCase().trim();
+  const platformKey = normalizeKey(platform.platform);
   const m = meta[platformKey] || { label: platform.platform, color: '#8B96AD' };
+
+  const easy = Number(platform.easy) || 0;
+  const medium = Number(platform.medium) || 0;
+  const hard = Number(platform.hard) || 0;
+  const totalSolved = Math.max(Number(platform.totalSolved) || 0, easy + medium + hard);
+
+  const hasStats = totalSolved > 0;
 
   return (
     <motion.div
@@ -33,26 +47,33 @@ export default function PlatformCard({ platform, delay }) {
         <span className="font-mono text-xs text-muted">@{platform.username}</span>
       </div>
 
-      {platform.error ? (
+      {platform.error && !hasStats ? (
         <div className="mt-4 flex items-start gap-2 text-sm text-accent2">
           <AlertTriangle size={16} className="mt-0.5 shrink-0" />
           <span>{platform.error}</span>
         </div>
       ) : (
         <>
-          <div className="mt-4 font-mono text-2xl font-bold text-text">{platform.totalSolved}</div>
+          <div className="mt-4 flex items-baseline justify-between">
+            <div className="font-mono text-2xl font-bold text-text">{totalSolved}</div>
+            {platform.error && (
+              <span className="text-[10px] text-accent2 flex items-center gap-1 font-mono">
+                <AlertTriangle size={11} /> cached
+              </span>
+            )}
+          </div>
           <div className="text-xs text-muted">total solved</div>
           <div className="mt-4 grid grid-cols-3 gap-2 text-center">
             <div>
-              <div className="font-mono text-sm font-semibold text-easy">{platform.easy}</div>
+              <div className="font-mono text-sm font-semibold text-easy">{easy}</div>
               <div className="text-[10px] uppercase tracking-wide text-muted">Easy</div>
             </div>
             <div>
-              <div className="font-mono text-sm font-semibold text-medium">{platform.medium}</div>
+              <div className="font-mono text-sm font-semibold text-medium">{medium}</div>
               <div className="text-[10px] uppercase tracking-wide text-muted">Medium</div>
             </div>
             <div>
-              <div className="font-mono text-sm font-semibold text-hard">{platform.hard}</div>
+              <div className="font-mono text-sm font-semibold text-hard">{hard}</div>
               <div className="text-[10px] uppercase tracking-wide text-muted">Hard</div>
             </div>
           </div>

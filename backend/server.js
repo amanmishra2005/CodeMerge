@@ -45,7 +45,9 @@ app.use('/api/contact', contactRoutes);
 // Serves built frontend static assets if available (supports unified container deployments)
 const path = require('path');
 const fs = require('fs');
-const frontendDist = path.join(__dirname, '../frontend/dist');
+const frontendDist = fs.existsSync(path.join(__dirname, '../Frontend/dist'))
+  ? path.join(__dirname, '../Frontend/dist')
+  : path.join(__dirname, '../frontend/dist');
 
 if (fs.existsSync(frontendDist)) {
   app.use(express.static(frontendDist));
