@@ -7,6 +7,11 @@ import Footer from '../components/Footer.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import api from '../api/axios.js';
 
+function normalizeKey(str) {
+  if (!str) return '';
+  return str.toLowerCase().replace(/[\s\-_]/g, '');
+}
+
 export default function GitHubDashboard() {
   const { user } = useAuth();
   const [platforms, setPlatforms] = useState([]);
@@ -18,7 +23,16 @@ export default function GitHubDashboard() {
     if (showLoading) setLoading(true);
     try {
       const res = await api.get('/stats/me');
-      setPlatforms(res.data.platforms || []);
+      const plats = res.data.platforms || [];
+      setPlatforms(plats);
+
+      const hasGh = plats.some((p) => normalizeKey(p.platform) === 'github');
+      const userHasGh = (user?.platforms || []).some(
+        (p) => normalizeKey(p.platform) === 'github'
+      );
+      if (!hasGh && userHasGh) {
+        handleSync();
+      }
     } catch (err) {
       console.error('Failed to load stats:', err);
     } finally {
@@ -42,7 +56,26 @@ export default function GitHubDashboard() {
     }
   };
 
-  const githubPlatform = platforms.find(p => p.platform.toLowerCase() === 'github');
+  const userGithub = (user?.platforms || []).find(
+    (p) => normalizeKey(p.platform) === 'github'
+  );
+
+  const snapshotGithub = platforms.find(
+    (p) => normalizeKey(p.platform) === 'github'
+  );
+
+  const githubPlatform =
+    snapshotGithub ||
+    (userGithub
+      ? {
+          platform: 'GitHub',
+          username: userGithub.username,
+          commits: Number(userGithub.commits) || 0,
+          error: null,
+        }
+      : null);
+
+  const totalCommits = Math.max(0, Number(githubPlatform?.commits) || 0);
 
   return (
     <div className="min-h-screen bg-ink flex flex-col justify-between">
@@ -159,7 +192,7 @@ export default function GitHubDashboard() {
                       <div className="relative flex items-center justify-center h-44 w-44 rounded-full border-4 border-dashed border-accent/30 bg-surface/50 shadow-inner">
                         <div className="text-center">
                           <span className="block text-4xl font-extrabold font-mono text-accent">
-                            {githubPlatform.commits || 0}
+                            {totalCommits}
                           </span>
                           <span className="text-[10px] text-muted uppercase tracking-wider font-semibold">
                             Total Commits
@@ -211,12 +244,16 @@ export default function GitHubDashboard() {
                         <span className="text-accent">$</span> git log --author="{githubPlatform.username}" --oneline
                       </div>
                       <div className="pl-3 border-l-2 border-border/60 text-muted">
-                        {githubPlatform.commits ? (
+                        {totalCommits > 0 ? (
                           <>
                             <div>* commit_hash_01: fix bug in contact section</div>
                             <div>* commit_hash_02: integrate github dashboard</div>
                             <div>* commit_hash_03: update scraper for zero count</div>
-                            <div className="italic text-[10px] text-muted/60">... and {githubPlatform.commits - 3} more commits fetched</div>
+                            {totalCommits > 3 && (
+                              <div className="italic text-[10px] text-muted/60">
+                                ... and {totalCommits - 3} more commits fetched
+                              </div>
+                            )}
                           </>
                         ) : (
                           <div className="italic text-muted/50">No commit log entries found.</div>

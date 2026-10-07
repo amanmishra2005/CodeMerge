@@ -246,8 +246,13 @@ router.get('/me', protect, async (req, res) => {
     const rawSnapshots = req.user.lastStats || [];
     const platforms = req.user.platforms || [];
 
-    // If user has linked platforms but no stats snapshot exists yet, automatically refresh
-    if (rawSnapshots.length === 0 && platforms.length > 0) {
+    // Check if any platform in user.platforms is missing from rawSnapshots
+    const hasMissingPlatform = platforms.some(
+      (p) => !rawSnapshots.some((s) => normalizePlatformKey(s.platform) === normalizePlatformKey(p.platform))
+    );
+
+    // If user has linked platforms but no stats snapshot exists yet or a platform is missing, automatically refresh
+    if ((rawSnapshots.length === 0 || hasMissingPlatform) && platforms.length > 0) {
       const refreshed = await executeRefreshForUser(req.user);
       return res.json(refreshed);
     }
@@ -267,6 +272,7 @@ router.get('/me', protect, async (req, res) => {
         easy,
         medium,
         hard,
+        commits: Number(s.commits) || 0,
       };
     });
 

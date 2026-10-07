@@ -63,17 +63,23 @@ function normalizePlatforms(platforms) {
   }
   if (platforms && typeof platforms === 'object') {
     const list = [];
-    if (platforms.leetcode && platforms.leetcode.username) {
-      list.push({ platform: 'leetcode', username: platforms.leetcode.username, label: 'LeetCode' });
-    }
-    if (platforms.codeforces && platforms.codeforces.username) {
-      list.push({ platform: 'codeforces', username: platforms.codeforces.username, label: 'Codeforces' });
-    }
-    if (platforms.gfg && platforms.gfg.username) {
-      list.push({ platform: 'gfg', username: platforms.gfg.username, label: 'GeeksforGeeks' });
-    }
-    if (platforms.hackerrank && platforms.hackerrank.username) {
-      list.push({ platform: 'hackerrank', username: platforms.hackerrank.username, label: 'HackerRank' });
+    const mapping = {
+      leetcode: 'LeetCode',
+      codeforces: 'Codeforces',
+      gfg: 'GeeksforGeeks',
+      hackerrank: 'HackerRank',
+      codechef: 'CodeChef',
+      atcoder: 'AtCoder',
+      github: 'GitHub',
+    };
+    for (const [key, label] of Object.entries(mapping)) {
+      const val = platforms[key];
+      if (val) {
+        const username = typeof val === 'string' ? val : val.username;
+        if (username) {
+          list.push({ platform: label, username, label: typeof val === 'object' ? val.label || '' : '' });
+        }
+      }
     }
     return list;
   }

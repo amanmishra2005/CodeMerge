@@ -9,7 +9,8 @@ const platformLinkSchema = new mongoose.Schema(
     totalSolved: { type: Number, default: 0 },
     easy: { type: Number, default: 0 },
     medium: { type: Number, default: 0 },
-    hard: { type: Number, default: 0 }
+    hard: { type: Number, default: 0 },
+    commits: { type: Number, default: 0 }
   }
 );
 
@@ -21,13 +22,14 @@ const statsSnapshotSchema = new mongoose.Schema(
     easy: { type: Number, default: 0 },
     medium: { type: Number, default: 0 },
     hard: { type: Number, default: 0 },
+    commits: { type: Number, default: 0 },
     raw: mongoose.Schema.Types.Mixed,
     fetchedAt: { type: Date, default: Date.now },
     error: { type: String, default: null },
     label: { type: String, default: '' },
     id: String, // associated platform connection ID
   },
-  { _id: false }
+  { _id: false, strict: false }
 );
 
 const userSchema = new mongoose.Schema(
