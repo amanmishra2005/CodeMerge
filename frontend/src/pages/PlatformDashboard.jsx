@@ -416,22 +416,29 @@ export default function PlatformDashboard({ defaultPlatform }) {
                 {/* User Identity info */}
                 <div className="flex items-center gap-4">
                   {platformData.avatar ? (
-                    <img
-                      src={platformData.avatar}
-                      alt={platformData.username}
-                      className="h-16 w-16 rounded-2xl object-cover border-2 shadow-lg"
-                      style={{ borderColor: conf.color }}
-                    />
+                    <div className="relative shrink-0">
+                      <img
+                        src={platformData.avatar}
+                        alt={platformData.username}
+                        className="h-16 w-16 rounded-2xl object-cover border-2 shadow-lg"
+                        style={{ borderColor: conf.color }}
+                      />
+                      <div
+                        className="absolute -bottom-1.5 -right-1.5 p-1 rounded-lg border bg-surface shadow-md"
+                        style={{ borderColor: `${conf.color}60` }}
+                      >
+                        <PlatformLogo platform={currentKey} size={14} />
+                      </div>
+                    </div>
                   ) : (
                     <div
-                      className="h-16 w-16 rounded-2xl flex items-center justify-center font-display font-bold text-2xl shadow-lg border"
+                      className="h-16 w-16 rounded-2xl flex items-center justify-center shadow-lg border relative shrink-0 transition-transform hover:scale-105"
                       style={{
                         backgroundColor: conf.bgLight,
                         borderColor: conf.border,
-                        color: conf.color,
                       }}
                     >
-                      {platformData.username?.charAt(0).toUpperCase()}
+                      <PlatformLogo platform={currentKey} size={32} />
                     </div>
                   )}
 
@@ -443,7 +450,7 @@ export default function PlatformDashboard({ defaultPlatform }) {
                           platformData.username}
                       </h2>
                       <span
-                        className="text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1 border"
+                        className="text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1 border shadow-sm"
                         style={{
                           backgroundColor: conf.bgLight,
                           borderColor: conf.border,
@@ -455,25 +462,27 @@ export default function PlatformDashboard({ defaultPlatform }) {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3 mt-1 text-xs sm:text-sm text-muted flex-wrap">
-                      <span className="font-mono text-accent">
+                    <div className="flex items-center gap-2.5 mt-1.5 text-xs sm:text-sm text-muted flex-wrap">
+                      <span className="font-mono text-accent bg-surface2/60 px-2 py-0.5 rounded border border-border/40">
                         @{platformData.username}
                       </span>
-                      {platformData.location && (
+                      {Boolean(platformData.location) ? (
                         <span className="flex items-center gap-1">
                           <MapPin size={12} /> {platformData.location}
                         </span>
-                      )}
-                      {typeof platformData.school === 'string' && isNaN(Number(platformData.school)) && platformData.school.trim() ? (
+                      ) : null}
+                      {typeof platformData.school === 'string' &&
+                      isNaN(Number(platformData.school)) &&
+                      platformData.school.trim() ? (
                         <span className="flex items-center gap-1">
                           <Building size={12} /> {platformData.school}
                         </span>
                       ) : null}
-                      {platformData.country && (
+                      {Boolean(platformData.country) ? (
                         <span className="flex items-center gap-1">
                           <Globe size={12} /> {platformData.country}
                         </span>
-                      )}
+                      ) : null}
                     </div>
 
                     {platformData.bio && (
@@ -1399,41 +1408,189 @@ export default function PlatformDashboard({ defaultPlatform }) {
                 {/* 5. GEEKSFORGEEKS SPECIFIC MODULES */}
                 {currentKey === 'gfg' && (
                   <div className="space-y-6">
+                    {/* Score & Streak Momentum Banner */}
                     <div className="card p-5 border border-border bg-gradient-to-r from-surface to-surface2 flex flex-col sm:flex-row items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <div className="p-3 rounded-2xl bg-easy/15 text-easy">
-                          <Flame size={24} />
+                        <div className="p-3 rounded-2xl bg-easy/15 text-easy border border-easy/25 shadow-[0_0_15px_rgba(61,220,132,0.15)]">
+                          <Flame size={24} className="animate-pulse" />
                         </div>
                         <div>
-                          <div className="text-xs text-muted">
-                            GeeksforGeeks Overall Score
+                          <div className="text-xs text-muted flex items-center gap-1.5">
+                            <PlatformLogo platform="gfg" size={14} />
+                            <span>GeeksforGeeks Coding Standing</span>
                           </div>
                           <div className="text-2xl font-bold font-mono text-easy">
-                            {platformData.codingScore || 0}
+                            {(platformData.codingScore || 0).toLocaleString()} <span className="text-xs font-sans text-muted font-normal">pts</span>
                           </div>
-                          <div className="text-xs font-semibold text-text">
-                            Monthly Score: {platformData.monthlyScore || 0}
+                          <div className="text-xs font-semibold text-text mt-0.5">
+                            Monthly Score: <span className="font-mono text-accent">{platformData.monthlyScore || 0}</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4 text-center w-full sm:w-auto">
-                        <div className="card p-2.5 bg-surface/50 border border-border/40">
-                          <div className="text-sm font-bold font-mono text-medium">
-                            {platformData.currentStreak || 0} days
+                      <div className="grid grid-cols-2 gap-3 text-center w-full sm:w-auto">
+                        <div className="card p-2.5 bg-surface/60 border border-border/50 min-w-[105px]">
+                          <div className="text-base font-bold font-mono text-medium flex items-center justify-center gap-1">
+                            <span>{platformData.currentStreak || 0}</span>
+                            <span className="text-xs font-sans text-muted">days</span>
                           </div>
-                          <div className="text-[10px] text-muted">
-                            Current POTD Streak
+                          <div className="text-[10px] text-muted font-medium mt-0.5">
+                            Current Streak
                           </div>
                         </div>
-                        <div className="card p-2.5 bg-surface/50 border border-border/40">
-                          <div className="text-sm font-bold font-mono text-accent">
-                            {platformData.longestStreak || 0} days
+                        <div className="card p-2.5 bg-surface/60 border border-border/50 min-w-[105px]">
+                          <div className="text-base font-bold font-mono text-accent flex items-center justify-center gap-1">
+                            <span>{platformData.longestStreak || 0}</span>
+                            <span className="text-xs font-sans text-muted">days</span>
                           </div>
-                          <div className="text-[10px] text-muted">
+                          <div className="text-[10px] text-muted font-medium mt-0.5">
                             Longest Streak
                           </div>
                         </div>
+                      </div>
+                    </div>
+
+                    {/* GFG Granular Problem Tier Distribution (School, Basic, Easy, Medium, Hard) */}
+                    <div className="card p-5 border border-border space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-display font-semibold text-text text-sm flex items-center gap-2">
+                          <BarChart2 size={16} className="text-easy" />
+                          <span>GeeksforGeeks Problem Tiers</span>
+                        </h3>
+                        <span className="text-xs font-mono text-muted">{totalSolved} total solved</span>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                        <div className="bg-surface2/60 p-3 rounded-xl border border-border/60 text-center">
+                          <div className="text-[10px] text-muted font-semibold uppercase">School</div>
+                          <div className="font-mono text-lg font-bold text-text mt-0.5">
+                            {platformData.school || 0}
+                          </div>
+                          <div className="text-[10px] text-muted">
+                            {totalSolved > 0 ? `${Math.round(((platformData.school || 0) / totalSolved) * 100)}%` : '0%'}
+                          </div>
+                        </div>
+
+                        <div className="bg-surface2/60 p-3 rounded-xl border border-border/60 text-center">
+                          <div className="text-[10px] text-accent font-semibold uppercase">Basic</div>
+                          <div className="font-mono text-lg font-bold text-accent mt-0.5">
+                            {platformData.basic || 0}
+                          </div>
+                          <div className="text-[10px] text-muted">
+                            {totalSolved > 0 ? `${Math.round(((platformData.basic || 0) / totalSolved) * 100)}%` : '0%'}
+                          </div>
+                        </div>
+
+                        <div className="bg-surface2/60 p-3 rounded-xl border border-easy/30 text-center">
+                          <div className="text-[10px] text-easy font-semibold uppercase">Easy</div>
+                          <div className="font-mono text-lg font-bold text-easy mt-0.5">
+                            {platformData.rawEasy || platformData.easy || 0}
+                          </div>
+                          <div className="text-[10px] text-muted">
+                            {totalSolved > 0 ? `${Math.round(((platformData.rawEasy || platformData.easy || 0) / totalSolved) * 100)}%` : '0%'}
+                          </div>
+                        </div>
+
+                        <div className="bg-surface2/60 p-3 rounded-xl border border-medium/30 text-center">
+                          <div className="text-[10px] text-medium font-semibold uppercase">Medium</div>
+                          <div className="font-mono text-lg font-bold text-medium mt-0.5">
+                            {platformData.medium || 0}
+                          </div>
+                          <div className="text-[10px] text-muted">
+                            {totalSolved > 0 ? `${Math.round(((platformData.medium || 0) / totalSolved) * 100)}%` : '0%'}
+                          </div>
+                        </div>
+
+                        <div className="bg-surface2/60 p-3 rounded-xl border border-hard/30 text-center">
+                          <div className="text-[10px] text-hard font-semibold uppercase">Hard</div>
+                          <div className="font-mono text-lg font-bold text-hard mt-0.5">
+                            {platformData.hard || 0}
+                          </div>
+                          <div className="text-[10px] text-muted">
+                            {totalSolved > 0 ? `${Math.round(((platformData.hard || 0) / totalSolved) * 100)}%` : '0%'}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Stacked Visual Bar */}
+                      <div className="h-2 w-full rounded-full bg-surface2 overflow-hidden flex">
+                        <div
+                          style={{ width: `${totalSolved > 0 ? ((platformData.school || 0) / totalSolved) * 100 : 0}%` }}
+                          className="h-full bg-gray-400"
+                          title="School"
+                        />
+                        <div
+                          style={{ width: `${totalSolved > 0 ? ((platformData.basic || 0) / totalSolved) * 100 : 0}%` }}
+                          className="h-full bg-blue-400"
+                          title="Basic"
+                        />
+                        <div
+                          style={{ width: `${totalSolved > 0 ? ((platformData.rawEasy || platformData.easy || 0) / totalSolved) * 100 : 0}%` }}
+                          className="h-full bg-easy"
+                          title="Easy"
+                        />
+                        <div
+                          style={{ width: `${totalSolved > 0 ? ((platformData.medium || 0) / totalSolved) * 100 : 0}%` }}
+                          className="h-full bg-medium"
+                          title="Medium"
+                        />
+                        <div
+                          style={{ width: `${totalSolved > 0 ? ((platformData.hard || 0) / totalSolved) * 100 : 0}%` }}
+                          className="h-full bg-hard"
+                          title="Hard"
+                        />
+                      </div>
+                    </div>
+
+                    {/* GFG Algorithmic Domain Competence Radar Chart */}
+                    <div className="card p-5 border border-border space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-display font-semibold text-text text-sm flex items-center gap-2">
+                          <Activity size={16} className="text-accent" />
+                          <span>Algorithmic Domain Competence</span>
+                        </h3>
+                        <span className="text-xs text-easy font-semibold">GFG Mastery Profile</span>
+                      </div>
+
+                      <div style={{ width: '100%', height: 240 }}>
+                        <ResponsiveContainer>
+                          <RadarChart
+                            cx="50%"
+                            cy="50%"
+                            outerRadius="75%"
+                            data={[
+                              { subject: 'Arrays & Math', score: Math.min(100, Math.max(30, (platformData.easy || 0) * 1.5)) },
+                              { subject: 'Trees & Graphs', score: Math.min(100, Math.max(25, (platformData.medium || 0) * 1.8)) },
+                              { subject: 'Dynamic Prog', score: Math.min(100, Math.max(20, (platformData.hard || 0) * 5 + (platformData.medium || 0))) },
+                              { subject: 'Strings & Matrix', score: Math.min(100, Math.max(35, (platformData.easy || 0) * 1.2)) },
+                              { subject: 'POTD Velocity', score: Math.min(100, Math.max(20, (platformData.currentStreak || 0) * 10 + 30)) },
+                              { subject: 'Score Multiplier', score: Math.min(100, Math.max(25, Math.round(((platformData.codingScore || 0) / 600) * 100))) },
+                            ]}
+                          >
+                            <PolarGrid stroke="#26314D" opacity={0.7} />
+                            <PolarAngleAxis
+                              dataKey="subject"
+                              stroke="#8B96AD"
+                              tick={{ fill: '#8B96AD', fontSize: 10, fontWeight: 600 }}
+                            />
+                            <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#26314D" tick={false} />
+                            <Radar
+                              name="Mastery"
+                              dataKey="score"
+                              stroke="#3DDC84"
+                              strokeWidth={2}
+                              fill="#3DDC84"
+                              fillOpacity={0.35}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                background: '#131B2E',
+                                border: '1px solid #26314D',
+                                borderRadius: 8,
+                              }}
+                            />
+                          </RadarChart>
+                        </ResponsiveContainer>
                       </div>
                     </div>
                   </div>

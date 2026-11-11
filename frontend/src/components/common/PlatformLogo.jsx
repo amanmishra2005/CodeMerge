@@ -2,6 +2,7 @@ import React from 'react';
 
 /**
  * Official SVG brand logos for all competitive coding & developer platforms.
+ * High-definition vector graphics with authentic brand colors and styling.
  */
 export default function PlatformLogo({ platform, className = 'w-5 h-5', size = 20 }) {
   const key = (platform || '').toLowerCase().replace(/[\s\-_]/g, '');
@@ -18,14 +19,17 @@ export default function PlatformLogo({ platform, className = 'w-5 h-5', size = 2
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
+          {/* LeetCode angled yellow/orange bracket */}
           <path
             d="M16.102 17.93l-2.697 2.607c-.466.467-1.111.728-1.78.728s-1.314-.261-1.8-.748L4.94 15.632A6.67 6.67 0 013 10.874c0-1.82.72-3.528 2.01-4.797l4.89-4.792c.465-.466 1.11-.727 1.78-.727.67 0 1.314.261 1.78.727l2.642 2.607a1.23 1.23 0 010 1.74 1.23 1.23 0 01-1.74 0L11.68 2.99a.88.88 0 00-.6-.24.88.88 0 00-.6.24L5.61 7.782C4.54 8.83 3.96 10.22 3.96 11.7c0 1.48.58 2.87 1.65 3.918l4.885 4.885c.34.34.78.51 1.22.51s.88-.17 1.22-.51l2.697-2.607a1.23 1.23 0 011.74 0 1.23 1.23 0 010 1.74z"
             fill="#FFA116"
           />
+          {/* White diagonal slash */}
           <path
             d="M9.86 12.83l7.98-7.98c.48-.48 1.26-.48 1.74 0s.48 1.26 0 1.74l-7.98 7.98c-.48.48-1.26.48-1.74 0s-.48-1.26 0-1.74z"
             fill="#FFFFFF"
           />
+          {/* Grey lower horizontal bar */}
           <path
             d="M14.05 13.92h6.72c.68 0 1.23.55 1.23 1.23s-.55 1.23-1.23 1.23h-6.72c-.68 0-1.23-.55-1.23-1.23s.55-1.23 1.23-1.23z"
             fill="#B3B3B3"
@@ -65,10 +69,19 @@ export default function PlatformLogo({ platform, className = 'w-5 h-5', size = 2
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* GeeksforGeeks double curved G */}
+          {/* Official GeeksforGeeks curly double-G emblem */}
           <path
-            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14.93c-2.88.35-5.35-1.76-5.49-4.57-.14-2.82 2.05-5.18 4.88-5.26 1.43-.04 2.76.51 3.73 1.43l-1.39 1.39c-.64-.61-1.5-1-2.42-.98-1.77.05-3.14 1.54-3.05 3.31.09 1.77 1.63 3.09 3.4 2.87 1.25-.15 2.19-.99 2.5-2.12H12.5v-2h5.05c.08.33.12.67.12 1.03 0 2.71-1.92 4.98-4.67 4.9z"
+            d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 2c4.418 0 8 3.582 8 8 0 4.418-3.582 8-8 8-4.418 0-8-3.582-8-8 0-4.418 3.582-8 8-8z"
             fill="#2F8D46"
+            opacity="0.15"
+          />
+          <path
+            d="M7.4 12c0-2.54 2.06-4.6 4.6-4.6 1.25 0 2.39.5 3.22 1.32l-1.42 1.42c-.47-.46-1.11-.74-1.8-.74-1.44 0-2.6 1.16-2.6 2.6s1.16 2.6 2.6 2.6c1.15 0 2.14-.75 2.47-1.8H12v-2h4.5c.06.33.1.67.1 1.02 0 2.54-2.06 4.6-4.6 4.6-2.54 0-4.6-2.06-4.6-4.62z"
+            fill="#2F8D46"
+          />
+          <path
+            d="M15.5 12h-3.5v1.8h2.08c-.28.84-1.07 1.45-2.08 1.45-1.19 0-2.15-.96-2.15-2.15 0-1.19.96-2.15 2.15-2.15.58 0 1.1.23 1.48.61l1.3-1.3C14.08 9.58 13.09 9.15 12 9.15c-1.57 0-2.85 1.28-2.85 2.85s1.28 2.85 2.85 2.85c1.64 0 2.72-1.15 2.72-2.77 0-.36-.04-.7-.12-1.08z"
+            fill="#3DDC84"
           />
         </svg>
       );
@@ -84,15 +97,16 @@ export default function PlatformLogo({ platform, className = 'w-5 h-5', size = 2
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* CodeChef Hat & Spoon */}
+          {/* CodeChef Chef's Hat & Silhouette */}
           <path
             d="M19 10c0-1.66-1.34-3-3-3-.26 0-.5.04-.74.1A4.98 4.98 0 007.74 7.1C7.5 7.04 7.26 7 7 7 5.34 7 4 8.34 4 10c0 1.28.81 2.37 1.95 2.79L5.5 17c0 .55.45 1 1 1h11c.55 0 1-.45 1-1l-.45-4.21A3.003 3.003 0 0019 10z"
             fill="#8B572A"
           />
           <path
-            d="M8 19h8v2H8z"
-            fill="#D0884A"
+            d="M8 18.5h8v2H8z"
+            fill="#F7931E"
           />
+          <circle cx="12" cy="11" r="1.5" fill="#FFFFFF" />
         </svg>
       );
 
@@ -130,15 +144,16 @@ export default function PlatformLogo({ platform, className = 'w-5 h-5', size = 2
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* AtCoder target icon */}
-          <circle cx="12" cy="12" r="9" stroke="#9CA3AF" strokeWidth="2" fill="none" />
+          {/* AtCoder iconic target radar icon */}
+          <circle cx="12" cy="12" r="9.5" stroke="#9CA3AF" strokeWidth="1.8" fill="none" opacity="0.4" />
+          <circle cx="12" cy="12" r="6" stroke="#9CA3AF" strokeWidth="2" fill="none" />
           <path
-            d="M12 6v12M6 12h12"
+            d="M12 4v4M12 16v4M4 12h4M16 12h4"
             stroke="#9CA3AF"
             strokeWidth="2"
             strokeLinecap="round"
           />
-          <circle cx="12" cy="12" r="3" fill="#FFFFFF" />
+          <circle cx="12" cy="12" r="2.5" fill="#FFFFFF" />
         </svg>
       );
 
@@ -180,4 +195,3 @@ export default function PlatformLogo({ platform, className = 'w-5 h-5', size = 2
       );
   }
 }
-

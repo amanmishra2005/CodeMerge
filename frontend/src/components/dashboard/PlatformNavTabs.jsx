@@ -54,9 +54,9 @@ export const PLATFORM_CONFIG = {
   },
   hackerrank: {
     label: 'HackerRank',
-    color: '#FF5C5C',
-    bgLight: 'rgba(255, 92, 92, 0.12)',
-    border: 'rgba(255, 92, 92, 0.35)',
+    color: '#00EA64',
+    bgLight: 'rgba(0, 234, 100, 0.12)',
+    border: 'rgba(0, 234, 100, 0.35)',
     domain: 'hackerrank.com',
     profileUrl: (u) => `https://www.hackerrank.com/profile/${u}`,
   },
