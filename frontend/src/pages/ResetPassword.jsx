@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   GitMerge,
   ArrowRight,
@@ -107,11 +107,17 @@ export default function ResetPassword() {
 
     setSubmitting(true);
     try {
-      await api.post(`/auth/reset-password/${token}`, { password });
+      const res = await api.post(`/auth/reset-password/${token}`, { password });
+      
+      // Save new auth token if returned so user is logged in
+      if (res.data?.token) {
+        localStorage.setItem('codemerge_token', res.data.token);
+      }
+      
       setSuccess(true);
       setTimeout(() => {
-        navigate('/login');
-      }, 3500);
+        navigate('/dashboard');
+      }, 3000);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to reset password. Please try again.');
     } finally {
@@ -120,7 +126,7 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-16 bg-ink">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 sm:px-6 py-16 bg-ink">
       {/* Background ambient lighting */}
       <motion.div
         className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-accent/20 blur-3xl"
@@ -137,7 +143,7 @@ export default function ResetPassword() {
         initial={{ opacity: 0, y: 25, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="card relative z-10 w-full max-w-md p-8 border border-border/80 shadow-2xl"
+        className="card relative z-10 w-full max-w-md p-6 sm:p-8 border border-border/80 shadow-2xl bg-surface/95"
       >
         <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold text-text">
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/15 text-accent shadow-[0_0_15px_rgba(76,141,255,0.2)]">
@@ -174,12 +180,12 @@ export default function ResetPassword() {
             <div>
               <h1 className="font-display text-2xl font-bold text-text">Password Reset!</h1>
               <p className="mt-2 text-sm text-muted">
-                Your password has been securely updated. Redirecting you to login...
+                Your password has been securely updated. Redirecting you to your dashboard...
               </p>
             </div>
             <div className="pt-2">
-              <Link to="/login" className="btn-primary w-full flex items-center justify-center gap-2">
-                Go to Log in Now <ArrowRight size={16} />
+              <Link to="/dashboard" className="btn-primary w-full flex items-center justify-center gap-2">
+                Go to Dashboard Now <ArrowRight size={16} />
               </Link>
             </div>
           </div>
@@ -296,7 +302,7 @@ export default function ResetPassword() {
               <button
                 type="submit"
                 disabled={submitting || score < 5 || !passwordsMatch}
-                className="btn-primary w-full flex items-center justify-center gap-2 font-display font-semibold disabled:opacity-50"
+                className="btn-primary w-full flex items-center justify-center gap-2 font-display font-semibold disabled:opacity-50 !py-3"
               >
                 {submitting ? (
                   <div className="flex items-center gap-2">
@@ -316,4 +322,3 @@ export default function ResetPassword() {
     </div>
   );
 }
-

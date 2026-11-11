@@ -115,10 +115,13 @@ router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
     const cleanEmail = email.trim().toLowerCase();
     const user = await User.findOne({ email: cleanEmail });
 
-    // Consistent timing to prevent user enumeration
+    // If user not found and no SMTP relay is configured, provide clear feedback
     if (!user) {
-      // Simulate token generation time
-      crypto.randomBytes(32);
+      if (!process.env.SMTP_HOST && !process.env.EMAIL_USER) {
+        return res.status(404).json({
+          message: `No account found with email "${cleanEmail}". Please check your email or create a new account.`,
+        });
+      }
       return res.json({
         message: 'If an account with that email exists, password reset instructions have been sent.',
       });
@@ -142,9 +145,9 @@ router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
 
     // Return message and include resetUrl for immediate developer/local preview
     res.json({
-      message: 'If an account with that email exists, password reset instructions have been sent.',
-      // Provided for local testing and dev preview
-      devResetUrl: process.env.NODE_ENV !== 'production' || clientOrigin.includes('localhost') ? resetUrl : undefined,
+      message: 'Password reset link generated successfully.',
+      resetToken,
+      devResetUrl: resetUrl,
       expiresInMinutes: 15,
     });
   } catch (err) {

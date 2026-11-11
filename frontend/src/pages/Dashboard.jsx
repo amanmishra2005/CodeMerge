@@ -75,7 +75,7 @@ export default function Dashboard() {
     const key = (p.platform || '').toLowerCase().replace(/[\s\-_]/g, '');
     return key !== 'github';
   });
-  const hasCodingStats = codingPlatforms.length > 0;
+  const hasAnyPlatforms = platforms.length > 0;
 
   return (
     <div className="min-h-screen bg-ink flex flex-col justify-between">
@@ -134,7 +134,7 @@ export default function Dashboard() {
             <PlatformNavTabs platforms={platforms} activeKey="" />
 
             {/* Centrally Aligned CodeMerge Unique Ranking Hero Card */}
-            {hasCodingStats && (
+            {hasAnyPlatforms && (
               <RankHeroCard
                 ranking={ranking}
                 totals={totals}
@@ -143,7 +143,7 @@ export default function Dashboard() {
               />
             )}
 
-            {!hasCodingStats ? (
+            {!hasAnyPlatforms ? (
               /* Empty Coding Stats View */
               <motion.div
                 initial={{ opacity: 0, scale: 0.96 }}

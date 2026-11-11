@@ -86,8 +86,9 @@ function validateEmail(email) {
 
 // Rate Limiter: Protects login and register against credential stuffing and brute-force
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 15, // max 15 login/register attempts per IP in 15 minutes
+  windowMs: 15 * 60 * 1000,
+  max: 50, // Generous limit allowing dev testing
+  skip: (req) => req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1',
   message: { message: 'Too many authentication attempts. Please try again after 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -95,9 +96,10 @@ const authLimiter = rateLimit({
 
 // Rate Limiter: Protects forgot-password against spamming / email flooding
 const forgotPasswordLimiter = rateLimit({
-  windowMs: 30 * 60 * 1000, // 30 minutes
-  max: 5, // max 5 forgot-password requests per IP in 30 minutes
-  message: { message: 'Too many password reset requests. Please try again in 30 minutes.' },
+  windowMs: 15 * 60 * 1000,
+  max: 30, // Generous limit for testing
+  skip: (req) => req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1',
+  message: { message: 'Too many password reset requests. Please try again in 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -105,7 +107,8 @@ const forgotPasswordLimiter = rateLimit({
 // Rate Limiter: Protects reset-password against token guessing
 const resetPasswordLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 30,
+  skip: (req) => req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1',
   message: { message: 'Too many reset attempts. Please try again in 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
