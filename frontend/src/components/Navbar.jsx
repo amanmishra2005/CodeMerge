@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { GitMerge, Menu, X, LogOut } from 'lucide-react';
+import { GitMerge, Menu, X, LogOut, Trophy } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function Navbar() {
@@ -17,6 +17,7 @@ export default function Navbar() {
   const navLinks = [
     { label: 'Features', href: '/#features' },
     { label: 'How it works', href: '/#how-it-works' },
+    { label: 'Contests', href: '/contests', isRoute: true, badge: 'Live' },
     { label: 'Contact', href: '/#contact' },
   ];
 
@@ -36,15 +37,30 @@ export default function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="font-body text-sm text-muted transition-colors hover:text-text"
-            >
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) =>
+            link.isRoute ? (
+              <Link
+                key={link.label}
+                to={link.href}
+                className="font-body text-sm text-muted transition-colors hover:text-text flex items-center gap-1.5"
+              >
+                <span>{link.label}</span>
+                {link.badge && (
+                  <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-easy/20 text-easy border border-easy/40">
+                    {link.badge}
+                  </span>
+                )}
+              </Link>
+            ) : (
+              <a
+                key={link.label}
+                href={link.href}
+                className="font-body text-sm text-muted transition-colors hover:text-text"
+              >
+                {link.label}
+              </a>
+            )
+          )}
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -82,11 +98,27 @@ export default function Navbar() {
           className="border-t border-border/60 px-6 py-4 md:hidden"
         >
           <div className="flex flex-col gap-4">
-            {navLinks.map((link) => (
-              <a key={link.label} href={link.href} className="text-muted" onClick={() => setOpen(false)}>
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) =>
+              link.isRoute ? (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  className="text-muted flex items-center justify-between"
+                  onClick={() => setOpen(false)}
+                >
+                  <span>{link.label}</span>
+                  {link.badge && (
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-easy/20 text-easy border border-easy/40">
+                      {link.badge}
+                    </span>
+                  )}
+                </Link>
+              ) : (
+                <a key={link.label} href={link.href} className="text-muted" onClick={() => setOpen(false)}>
+                  {link.label}
+                </a>
+              )
+            )}
             {user ? (
               <>
                 <Link to="/dashboard" className="btn-secondary" onClick={() => setOpen(false)}>

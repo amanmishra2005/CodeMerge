@@ -84,16 +84,19 @@ export default function Register() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.26 }}>
-            <label className="mb-1.5 block text-xs font-medium text-muted">Password</label>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label className="text-xs font-medium text-muted">Password</label>
+              <span className="text-[11px] text-muted">Min 8 chars, mixed case, number & symbol</span>
+            </div>
             <div className="relative">
               <input
                 required
-                minLength={6}
+                minLength={8}
                 type={showPassword ? 'text' : 'password'}
                 name="password"
                 value={form.password}
                 onChange={handleChange}
-                placeholder="At least 6 characters"
+                placeholder="Must include A-Z, a-z, 0-9, and symbol"
                 className="input-field pr-12"
               />
               <button

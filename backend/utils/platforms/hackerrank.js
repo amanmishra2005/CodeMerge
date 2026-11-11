@@ -22,6 +22,15 @@ async function getHackerRankStats(username) {
       const medium = Math.round(total * 0.35);
       const hard = Math.max(0, total - easy - medium);
 
+      const badges = data.models.map((b) => ({
+        name: b.badge_name,
+        stars: b.stars || 0,
+        solved: b.solved || 0,
+        totalChallenges: b.total_challenges || 0,
+        icon: b.icon_url || b.icon || null,
+        type: b.badge_type || '',
+      }));
+
       return {
         platform: 'hackerrank',
         username,
@@ -29,6 +38,9 @@ async function getHackerRankStats(username) {
         easy,
         medium,
         hard,
+        badges,
+        badgeCount: badges.length,
+        skills: badges.map((b) => b.name),
         raw: data.models,
         error: null,
       };

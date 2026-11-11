@@ -72,7 +72,12 @@ export default function Login() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.18 }}>
-            <label className="mb-1.5 block text-xs font-medium text-muted">Password</label>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label className="text-xs font-medium text-muted">Password</label>
+              <Link to="/forgot-password" className="text-xs text-accent hover:underline">
+                Forgot password?
+              </Link>
+            </div>
             <div className="relative">
               <input
                 required

@@ -31,6 +31,14 @@ async function getGfgStats(username) {
           easy: easy || Math.round(total * 0.5),
           medium: medium || Math.round(total * 0.4),
           hard: hard || Math.max(0, total - Math.round(total * 0.5) - Math.round(total * 0.4)),
+          codingScore: Number(data.total_score) || Number(data.score) || Number(data.coding_score) || 0,
+          monthlyScore: Number(data.monthly_score) || 0,
+          currentStreak: Number(data.pod_solved_current_streak) || 0,
+          longestStreak: Number(data.pod_solved_longest_streak) || 0,
+          school: Number(data.School) || 0,
+          basic: Number(data.Basic) || 0,
+          rawEasy: Number(data.Easy) || 0,
+          instituteRank: data.institute_rank || null,
           raw: data,
           error: null,
         };
@@ -60,11 +68,17 @@ async function getGfgStats(username) {
           html.match(/\\?"total_problems_solved\\?"\s*:\s*(\d+)/i) ||
           html.match(/total_problems_solved["\\]*\s*:\s*(\d+)/i) ||
           html.match(/Problems\s+Solved\s*[:\s]*(\d+)/i);
-        const scoreMatch = html.match(/\\?"score\\?"\s*:\s*(\d+)/i);
+        const scoreMatch =
+          html.match(/\\?"score\\?"\s*:\s*(\d+)/i) ||
+          html.match(/Overall\s+Coding\s+Score\s*[:\s]*(\d+)/i);
+        const streakMatch =
+          html.match(/currentStreak["\\]*\s*:\s*(\d+)/i) ||
+          html.match(/Current\s+Streak\s*[:\s]*(\d+)/i);
 
         if (solvedMatch) {
           const total = parseInt(solvedMatch[1], 10) || 0;
           const score = scoreMatch ? parseInt(scoreMatch[1], 10) : 0;
+          const streak = streakMatch ? parseInt(streakMatch[1], 10) : 0;
 
           const easy = Math.round(total * 0.5);
           const medium = Math.round(total * 0.4);
@@ -77,6 +91,8 @@ async function getGfgStats(username) {
             easy,
             medium,
             hard,
+            codingScore: score,
+            currentStreak: streak,
             raw: { total_problems_solved: total, score, source: 'html_fallback' },
             error: null,
           };

@@ -1,12 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Link2, RefreshCw, Sparkles, Layers, Sliders, ArrowUpRight } from 'lucide-react';
+import {
+  Link2,
+  RefreshCw,
+  Sparkles,
+  Layers,
+  Sliders,
+  ArrowUpRight,
+  Share2,
+  Trophy,
+  Calendar,
+  ExternalLink,
+} from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
 import StatsOverview from '../components/dashboard/StatsOverview.jsx';
 import DifficultyChart from '../components/dashboard/DifficultyChart.jsx';
 import PlatformCard from '../components/dashboard/PlatformCard.jsx';
+import PlatformNavTabs from '../components/dashboard/PlatformNavTabs.jsx';
+import RankHeroCard from '../components/dashboard/RankHeroCard.jsx';
+import SharableCardModal from '../components/dashboard/SharableCardModal.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import api from '../api/axios.js';
 
@@ -14,8 +28,10 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [platforms, setPlatforms] = useState([]);
   const [totals, setTotals] = useState({ totalSolved: 0, easy: 0, medium: 0, hard: 0 });
+  const [ranking, setRanking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const fetchStats = async (showLoading = true) => {
@@ -25,6 +41,8 @@ export default function Dashboard() {
       const plats = res.data.platforms || [];
       setPlatforms(plats);
       setTotals(res.data.totals || {});
+      setRanking(res.data.ranking || null);
+
       if (plats.length === 0 && user?.platforms?.length > 0) {
         handleSync();
       }
@@ -45,6 +63,7 @@ export default function Dashboard() {
       const res = await api.get('/stats/refresh');
       setPlatforms(res.data.platforms || []);
       setTotals(res.data.totals || {});
+      setRanking(res.data.ranking || null);
     } catch (err) {
       console.error('Failed to sync stats:', err);
     } finally {
@@ -52,7 +71,7 @@ export default function Dashboard() {
     }
   };
 
-  const codingPlatforms = platforms.filter(p => {
+  const codingPlatforms = platforms.filter((p) => {
     const key = (p.platform || '').toLowerCase().replace(/[\s\-_]/g, '');
     return key !== 'github';
   });
@@ -62,55 +81,67 @@ export default function Dashboard() {
     <div className="min-h-screen bg-ink flex flex-col justify-between">
       <Navbar />
 
-      <main className="mx-auto w-full max-w-7xl px-6 py-10 flex-grow">
+      <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10 flex-grow">
         {loading ? (
-          <div className="flex justify-center items-center py-32">
+          <div className="flex flex-col items-center justify-center py-32 space-y-4">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-border border-t-accent" />
+            <p className="text-sm text-muted">Calculating real-time CodeMerge ranking...</p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Header row */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
                 <h1 className="font-display text-2xl font-bold text-text md:text-3xl">
                   Welcome back, {user?.name?.split(' ')[0]}
                 </h1>
-                <p className="mt-1 text-sm text-muted">Here's your aggregated developer stats.</p>
+                <p className="mt-1 text-sm text-muted">Here's your aggregated developer score and verified standing.</p>
               </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-3"
+                className="flex flex-wrap items-center gap-3"
               >
+                <button
+                  onClick={() => setShareModalOpen(true)}
+                  className="btn-primary !px-4 !py-2.5 text-sm flex items-center gap-2 shadow-[0_0_20px_rgba(76,141,255,0.25)] hover:shadow-[0_0_25px_rgba(76,141,255,0.4)]"
+                >
+                  <Share2 size={15} />
+                  <span>Share Card</span>
+                </button>
+
                 <button
                   onClick={handleSync}
                   disabled={syncing}
                   className="btn-secondary !px-4 !py-2.5 text-sm flex items-center gap-2"
                 >
                   <RefreshCw size={15} className={syncing ? 'animate-spin text-accent' : ''} />
-                  {syncing ? 'Refreshing...' : 'Sync Stats'}
+                  <span>{syncing ? 'Refreshing...' : 'Sync Stats'}</span>
                 </button>
 
                 <Link
                   to="/dashboard/link"
-                  className="btn-primary !px-4 !py-2.5 text-sm flex items-center gap-2"
+                  className="btn-secondary !px-4 !py-2.5 text-sm flex items-center gap-2"
                 >
                   <Sliders size={15} />
-                  Configure
+                  <span>Configure</span>
                 </Link>
               </motion.div>
             </div>
 
-            {/* Navigation Tabs */}
-            <div className="flex border-b border-border/40 gap-6">
-              <button className="pb-3 text-sm font-semibold border-b-2 border-accent text-accent">
-                Coding Stats
-              </button>
-              <Link to="/dashboard/github" className="pb-3 text-sm font-semibold text-muted hover:text-text transition-colors duration-200">
-                GitHub Dashboard
-              </Link>
-            </div>
+            {/* Platform Navigation Tabs */}
+            <PlatformNavTabs platforms={platforms} activeKey="" />
+
+            {/* Centrally Aligned CodeMerge Unique Ranking Hero Card */}
+            {hasCodingStats && (
+              <RankHeroCard
+                ranking={ranking}
+                totals={totals}
+                user={user}
+                onOpenShareModal={() => setShareModalOpen(true)}
+              />
+            )}
 
             {!hasCodingStats ? (
               /* Empty Coding Stats View */
@@ -135,34 +166,45 @@ export default function Dashboard() {
                 </div>
                 <h2 className="text-xl font-bold text-text">Link Coding Platforms</h2>
                 <p className="mt-2 text-muted text-sm max-w-md">
-                  You haven't linked any coding platforms (LeetCode, Codeforces, GeeksforGeeks, HackerRank, CodeChef, AtCoder) yet. Link them to see combined problem solving statistics.
+                  Link your coding accounts (LeetCode, Codeforces, GeeksforGeeks, HackerRank, CodeChef, AtCoder, GitHub) to calculate your CodeMerge Rank and unlock your shareable developer scorecard.
                 </p>
                 <div className="mt-6">
                   <Link to="/dashboard/link" className="btn-primary">
-                    Link Platforms
+                    Link Platforms Now
                   </Link>
                 </div>
               </motion.div>
             ) : (
               /* Real Stats Dashboard view */
               <div className="space-y-8 animate-fade-in">
+                {/* 4 Stat Cards */}
                 <StatsOverview totals={totals} />
+
+                {/* Difficulty Graphical Mix & Bar Charts */}
                 <DifficultyChart platforms={codingPlatforms} totals={totals} />
+
+                {/* Connected Platforms Grid */}
                 <div className="space-y-4">
-                  <h3 className="font-display text-base font-semibold text-text">Individual accounts</h3>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-display text-base font-semibold text-text">Connected Platforms</h3>
+                      <p className="text-xs text-muted">Click any platform card to inspect detailed platform metrics</p>
+                    </div>
+                    <span className="text-xs text-muted font-mono">{platforms.length} Platforms Active</span>
+                  </div>
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {codingPlatforms.map((p, i) => (
+                    {platforms.map((p, i) => (
                       <PlatformCard key={`${p.platform}-${p.username}-${i}`} platform={p} delay={i * 0.08} />
                     ))}
                   </div>
                 </div>
 
-                {/* Dedicated AI Analysis Section CTA */}
+                {/* AI Mentor Report CTA Banner */}
                 <motion.div
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
-                  className="card relative overflow-hidden p-6 border border-accent/20 hover:border-accent/40 bg-gradient-to-r from-surface to-surface2 transition-all duration-300"
+                  className="card relative overflow-hidden p-6 sm:p-8 border border-accent/20 hover:border-accent/40 bg-gradient-to-r from-surface to-surface2 transition-all duration-300"
                 >
                   <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-accent/10 blur-2xl animate-pulse" />
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
@@ -171,9 +213,9 @@ export default function Dashboard() {
                         <Sparkles size={24} />
                       </span>
                       <div>
-                        <h3 className="font-display text-lg font-bold text-text">AI Mentor Report</h3>
+                        <h3 className="font-display text-lg font-bold text-text">AI Mentor Analysis</h3>
                         <p className="mt-1 text-sm text-muted max-w-xl">
-                          Let our AI Mentor review your combined stats, highlight your strengths, and build a personalized roadmap showing you what to practice next.
+                          Let our AI Mentor review your combined stats across all linked platforms, diagnose skill gaps, and generate customized roadmaps for competitive milestones.
                         </p>
                       </div>
                     </div>
@@ -190,6 +232,16 @@ export default function Dashboard() {
           </div>
         )}
       </main>
+
+      {/* Social Media Share Card Studio Modal */}
+      <SharableCardModal
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        ranking={ranking}
+        totals={totals}
+        user={user}
+        platforms={platforms}
+      />
 
       <Footer />
     </div>

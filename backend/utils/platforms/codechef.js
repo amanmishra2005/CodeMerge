@@ -18,6 +18,36 @@ async function getCodeChefStats(username) {
       html.match(/Fully\s+Solved\s*\((\d+)\)/i) ||
       html.match(/problems-solved[^>]*>(\d+)</i);
 
+    const starsMatch =
+      html.match(/class=["']rating-star["'][^>]*>([^<]+)/i) ||
+      html.match(/(\d+★)/) ||
+      html.match(/class=["']rating["']>(\d+★)/i);
+
+    const ratingMatch =
+      html.match(/class=["']rating-number["']>(\d+)<\/div>/i) ||
+      html.match(/rating-number[^>]*>(\d+)</i);
+
+    const highestRatingMatch =
+      html.match(/Highest\s+Rating\s*(\d+)/i) ||
+      html.match(/highest_rating[^>]*>(\d+)</i);
+
+    const globalRankMatch =
+      html.match(/Global\s+Rank[^<]*<strong>(\d+)<\/strong>/i) ||
+      html.match(/global_rank[^>]*>(\d+)</i);
+
+    const countryRankMatch =
+      html.match(/Country\s+Rank[^<]*<strong>(\d+)<\/strong>/i) ||
+      html.match(/country_rank[^>]*>(\d+)</i);
+
+    const divMatch = html.match(/\(Div\s*(\d+)\)/i);
+
+    const stars = starsMatch ? starsMatch[1].trim() : null;
+    const currentRating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
+    const highestRating = highestRatingMatch ? parseInt(highestRatingMatch[1], 10) : null;
+    const globalRank = globalRankMatch ? parseInt(globalRankMatch[1], 10) : null;
+    const countryRank = countryRankMatch ? parseInt(countryRankMatch[1], 10) : null;
+    const division = divMatch ? `Div ${divMatch[1]}` : null;
+
     if (solvedMatch) {
       const total = parseInt(solvedMatch[1], 10) || 0;
       const easy = Math.round(total * 0.5);
@@ -31,10 +61,16 @@ async function getCodeChefStats(username) {
         easy,
         medium,
         hard,
-        raw: { totalSolved: total, source: 'html_scraper' },
+        stars,
+        currentRating,
+        highestRating,
+        globalRank,
+        countryRank,
+        division,
+        raw: { totalSolved: total, stars, currentRating, highestRating, source: 'html_scraper' },
         error: null,
       };
-    } else if (html.includes('problems-solved') || html.includes('Total Problems Solved') || html.includes('Problems Solved')) {
+    } else if (html.includes('problems-solved') || html.includes('Total Problems Solved') || html.includes('Problems Solved') || currentRating) {
       return {
         platform: 'codechef',
         username,
@@ -42,7 +78,13 @@ async function getCodeChefStats(username) {
         easy: 0,
         medium: 0,
         hard: 0,
-        raw: { totalSolved: 0, source: 'html_scraper' },
+        stars,
+        currentRating,
+        highestRating,
+        globalRank,
+        countryRank,
+        division,
+        raw: { totalSolved: 0, stars, currentRating, source: 'html_scraper' },
         error: null,
       };
     }

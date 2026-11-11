@@ -1,22 +1,36 @@
 const fs = require('fs');
 const path = require('path');
 
-// Simple file-based database helper
+// Simple file-based database helper with in-memory caching for lightning fast I/O
 const DB_FILE = path.join(__dirname, 'mock-db.json');
 
+let _memoryCache = null;
+let _writeTimeout = null;
+
 function readDb() {
+  if (_memoryCache) return _memoryCache;
+
   if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(DB_FILE, JSON.stringify({ users: [], contacts: [] }, null, 2));
+    _memoryCache = { users: [], contacts: [] };
+    fs.writeFileSync(DB_FILE, JSON.stringify(_memoryCache, null, 2));
+    return _memoryCache;
   }
   try {
-    return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+    _memoryCache = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+    return _memoryCache;
   } catch (e) {
-    return { users: [], contacts: [] };
+    _memoryCache = { users: [], contacts: [] };
+    return _memoryCache;
   }
 }
 
 function writeDb(data) {
-  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+  _memoryCache = data;
+  try {
+    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error('Failed to persist mock-db to disk:', err);
+  }
 }
 
 class Schema {
@@ -26,6 +40,11 @@ class Schema {
     this.methods = {};
     this.statics = {};
     this._hooks = { pre: {}, post: {} };
+    this._indexes = [];
+  }
+
+  index(fields, options) {
+    this._indexes.push({ fields, options });
   }
 
   pre(hookName, fn) {
@@ -70,8 +89,7 @@ function applyDefaults(data, definition) {
         result[key] = applyDefaults({}, prop);
       }
     }
-    
-    // If it is an object (or has schema type), apply the sub-defaults
+
     if (result[key] !== undefined) {
       if (prop && prop.type && prop.type.definition) {
         result[key] = applyDefaults(result[key], prop.type.definition);
@@ -99,7 +117,7 @@ const mongoose = {
         const withDefaults = applyDefaults(data, schema.definition);
         Object.assign(this, withDefaults);
         this._original = JSON.parse(JSON.stringify(withDefaults || {}));
-        
+
         // Copy instance methods
         for (const methodName in schema.methods) {
           this[methodName] = schema.methods[methodName].bind(this);
@@ -108,7 +126,6 @@ const mongoose = {
 
       toObject() {
         const obj = { ...this };
-        // Remove methods and internal tracking properties
         for (const methodName in schema.methods) {
           delete obj[methodName];
         }
@@ -117,7 +134,7 @@ const mongoose = {
       }
 
       isModified(path) {
-        if (!this._id) return true; // new document
+        if (!this._id) return true;
         if (this._original[path] === undefined) {
           return this[path] !== undefined;
         }
@@ -155,8 +172,7 @@ const mongoose = {
 
         db[collectionName] = collection;
         writeDb(db);
-        
-        // Update _original after save
+
         this._original = JSON.parse(JSON.stringify(cleanData));
         return this;
       }

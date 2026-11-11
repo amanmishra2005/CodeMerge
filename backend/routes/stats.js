@@ -9,6 +9,7 @@ const getHackerRankStats = require('../utils/platforms/hackerrank');
 const getCodeChefStats = require('../utils/platforms/codechef');
 const getAtCoderStats = require('../utils/platforms/atcoder');
 const getGitHubStats = require('../utils/platforms/github');
+const { calculateCodeMergeRanking } = require('../utils/ranking');
 
 const router = express.Router();
 
@@ -71,6 +72,33 @@ const fetchers = {
   github: getGitHubStats,
 };
 
+// Storage efficiency helper: Prunes large arrays to keep DB size compact and response times fast
+function pruneSnapshotForStorage(rawObj) {
+  if (!rawObj || typeof rawObj !== 'object') return rawObj;
+  const clean = { ...rawObj };
+
+  // Limit recent submissions to max 15 entries
+  if (Array.isArray(clean.recentSubmissions)) {
+    clean.recentSubmissions = clean.recentSubmissions.slice(0, 15);
+  }
+  delete clean.allSubmissions;
+
+  // Limit repositories to top 8
+  if (Array.isArray(clean.topRepositories)) {
+    clean.topRepositories = clean.topRepositories.slice(0, 8);
+  }
+
+  // Limit problem tags to top 20
+  if (Array.isArray(clean.tagProblemCounts)) {
+    clean.tagProblemCounts = clean.tagProblemCounts.slice(0, 20);
+  }
+  if (Array.isArray(clean.problemTags)) {
+    clean.problemTags = clean.problemTags.slice(0, 20);
+  }
+
+  return clean;
+}
+
 // Core helper to fetch stats for all platforms of a user and compute totals
 async function executeRefreshForUser(user) {
   const platforms = user.platforms || [];
@@ -85,17 +113,18 @@ async function executeRefreshForUser(user) {
         try {
           const stats = await fetcher(p.username);
           if (stats) {
+            const pruned = pruneSnapshotForStorage(stats);
             const isGitHub = key === 'github';
-            const easy = Number(stats.easy) || Number(p.easy) || 0;
-            const medium = Number(stats.medium) || Number(p.medium) || 0;
-            const hard = Number(stats.hard) || Number(p.hard) || 0;
+            const easy = Number(pruned.easy) || Number(p.easy) || 0;
+            const medium = Number(pruned.medium) || Number(p.medium) || 0;
+            const hard = Number(pruned.hard) || Number(p.hard) || 0;
             const sumDiff = easy + medium + hard;
             const totalSolved = isGitHub
               ? 0
-              : Math.max(Number(stats.totalSolved) || Number(p.totalSolved) || 0, sumDiff);
+              : Math.max(Number(pruned.totalSolved) || Number(p.totalSolved) || 0, sumDiff);
 
             return {
-              ...stats,
+              ...pruned,
               platform: PLATFORM_CANONICAL_LABELS[key] || p.platform,
               label: p.label || '',
               id: p._id ? p._id.toString() : '',
@@ -103,7 +132,8 @@ async function executeRefreshForUser(user) {
               easy,
               medium,
               hard,
-              error: stats.error || null,
+              fetchedAt: new Date(),
+              error: pruned.error || null,
             };
           }
         } catch (fetchErr) {
@@ -174,7 +204,8 @@ function computeTotalsForSnapshots(snapshots) {
   );
 
   totals.totalSolved = Math.max(totals.totalSolved, totals.easy + totals.medium + totals.hard);
-  return { platforms: snapshots, totals };
+  const ranking = calculateCodeMergeRanking(snapshots);
+  return { platforms: snapshots, totals, ranking };
 }
 
 // @route  PUT /api/stats/platforms
@@ -223,10 +254,102 @@ router.get('/refresh', protect, async (req, res) => {
       await req.user.save();
     }
 
-    const { platforms, totals } = await executeRefreshForUser(req.user);
-    res.json({ platforms, totals });
+    const { platforms, totals, ranking } = await executeRefreshForUser(req.user);
+    res.json({ platforms, totals, ranking });
   } catch (err) {
     res.status(500).json({ message: 'Failed to refresh stats', error: err.message });
+  }
+});
+
+// @route  GET /api/stats/refresh/:platformKey
+// @desc   Fetch fresh stats for a specific platform and update user snapshot
+router.get('/refresh/:platformKey', protect, async (req, res) => {
+  try {
+    const targetKey = normalizePlatformKey(req.params.platformKey);
+    const platforms = req.user.platforms || [];
+    const targetPlatform = platforms.find((p) => normalizePlatformKey(p.platform) === targetKey);
+
+    if (!targetPlatform) {
+      return res.status(404).json({ message: `Platform ${req.params.platformKey} not linked to user account.` });
+    }
+
+    const fetcher = fetchers[targetKey];
+    let updatedSnapshot = null;
+
+    if (fetcher && targetPlatform.username) {
+      try {
+        const stats = await fetcher(targetPlatform.username);
+        const isGitHub = targetKey === 'github';
+        const easy = Number(stats?.easy) || Number(targetPlatform.easy) || 0;
+        const medium = Number(stats?.medium) || Number(targetPlatform.medium) || 0;
+        const hard = Number(stats?.hard) || Number(targetPlatform.hard) || 0;
+        const sumDiff = easy + medium + hard;
+        const totalSolved = isGitHub ? 0 : Math.max(Number(stats?.totalSolved) || Number(targetPlatform.totalSolved) || 0, sumDiff);
+
+        const pruned = pruneSnapshotForStorage(stats);
+        updatedSnapshot = {
+          ...pruned,
+          platform: PLATFORM_CANONICAL_LABELS[targetKey] || targetPlatform.platform,
+          label: targetPlatform.label || '',
+          id: targetPlatform._id ? targetPlatform._id.toString() : '',
+          totalSolved,
+          easy,
+          medium,
+          hard,
+          fetchedAt: new Date(),
+          error: pruned?.error || null,
+        };
+      } catch (err) {
+        updatedSnapshot = {
+          platform: PLATFORM_CANONICAL_LABELS[targetKey] || targetPlatform.platform,
+          username: targetPlatform.username,
+          totalSolved: Math.max(Number(targetPlatform.totalSolved) || 0, (Number(targetPlatform.easy) || 0) + (Number(targetPlatform.medium) || 0) + (Number(targetPlatform.hard) || 0)),
+          easy: Number(targetPlatform.easy) || 0,
+          medium: Number(targetPlatform.medium) || 0,
+          hard: Number(targetPlatform.hard) || 0,
+          label: targetPlatform.label || '',
+          error: err.message || 'Could not fetch stats.',
+        };
+      }
+    } else {
+      const easy = Number(targetPlatform.easy) || 0;
+      const medium = Number(targetPlatform.medium) || 0;
+      const hard = Number(targetPlatform.hard) || 0;
+      updatedSnapshot = {
+        platform: targetPlatform.platform,
+        username: targetPlatform.username,
+        totalSolved: Math.max(Number(targetPlatform.totalSolved) || 0, easy + medium + hard),
+        easy,
+        medium,
+        hard,
+        label: targetPlatform.label || '',
+        id: targetPlatform._id ? targetPlatform._id.toString() : '',
+        error: null,
+      };
+    }
+
+    // Merge into user.lastStats
+    const currentSnapshots = (req.user.lastStats || []).map((s) =>
+      s && typeof s.toObject === 'function' ? s.toObject() : (s?._doc || s || {})
+    );
+
+    const existingIndex = currentSnapshots.findIndex(
+      (s) => normalizePlatformKey(s.platform) === targetKey
+    );
+
+    if (existingIndex >= 0) {
+      currentSnapshots[existingIndex] = updatedSnapshot;
+    } else {
+      currentSnapshots.push(updatedSnapshot);
+    }
+
+    req.user.lastStats = currentSnapshots;
+    await req.user.save();
+
+    const { totals, ranking } = computeTotalsForSnapshots(currentSnapshots);
+    res.json({ platform: updatedSnapshot, platforms: currentSnapshots, totals, ranking });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to refresh single platform stats', error: err.message });
   }
 });
 
@@ -257,8 +380,9 @@ router.get('/me', protect, async (req, res) => {
       return res.json(refreshed);
     }
 
-    // Ensure snapshots have properly calculated non-zero totalSolved
-    const cleanSnapshots = rawSnapshots.map((s) => {
+    // Ensure snapshots have properly calculated non-zero totalSolved and preserve all rich stats
+    const cleanSnapshots = rawSnapshots.map((rawS) => {
+      const s = rawS && typeof rawS.toObject === 'function' ? rawS.toObject() : (rawS?._doc || rawS || {});
       const isGH = normalizePlatformKey(s.platform) === 'github';
       const easy = Number(s.easy) || 0;
       const medium = Number(s.medium) || 0;
@@ -276,10 +400,65 @@ router.get('/me', protect, async (req, res) => {
       };
     });
 
-    const { totals } = computeTotalsForSnapshots(cleanSnapshots);
-    res.json({ platforms: cleanSnapshots, totals });
+    const { totals, ranking } = computeTotalsForSnapshots(cleanSnapshots);
+    res.json({ platforms: cleanSnapshots, totals, ranking });
   } catch (err) {
     res.status(500).json({ message: 'Failed to load stats', error: err.message });
+  }
+});
+
+// @route  GET /api/stats/share/:identifier
+// @desc   Public endpoint - retrieve verified stats and ranking card for public sharing
+router.get('/share/:identifier', async (req, res) => {
+  try {
+    const { identifier } = req.params;
+    if (!identifier) {
+      return res.status(400).json({ message: 'User identifier required' });
+    }
+
+    // Try finding by _id first, then by email (without domain or full)
+    let user = await User.findById(identifier);
+    if (!user) {
+      user = await User.findOne({ email: identifier.toLowerCase() });
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: 'User profile not found' });
+    }
+
+    const rawSnapshots = user.lastStats || [];
+    const cleanSnapshots = rawSnapshots.map((rawS) => {
+      const s = rawS && typeof rawS.toObject === 'function' ? rawS.toObject() : (rawS?._doc || rawS || {});
+      const isGH = normalizePlatformKey(s.platform) === 'github';
+      const easy = Number(s.easy) || 0;
+      const medium = Number(s.medium) || 0;
+      const hard = Number(s.hard) || 0;
+      const sumDiff = easy + medium + hard;
+      const totalSolved = isGH ? 0 : Math.max(Number(s.totalSolved) || 0, sumDiff);
+
+      return {
+        ...s,
+        totalSolved,
+        easy,
+        medium,
+        hard,
+        commits: Number(s.commits) || 0,
+      };
+    });
+
+    const { totals, ranking } = computeTotalsForSnapshots(cleanSnapshots);
+
+    res.json({
+      user: {
+        id: user._id,
+        name: user.name,
+      },
+      platforms: cleanSnapshots,
+      totals,
+      ranking,
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to retrieve public stats', error: err.message });
   }
 });
 
