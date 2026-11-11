@@ -29,6 +29,7 @@ import PlatformNavTabs, {
   PLATFORM_CONFIG,
   normalizePlatformKey,
 } from '../components/dashboard/PlatformNavTabs.jsx';
+import PlatformLogo from '../components/common/PlatformLogo.jsx';
 import api from '../api/axios.js';
 
 const PLATFORMS_FILTER = [
@@ -359,10 +360,14 @@ export default function ContestsPage() {
                       : {}
                   }
                 >
-                  <span
-                    className="h-2 w-2 rounded-full shrink-0"
-                    style={{ backgroundColor: p.color }}
-                  />
+                  {p.key !== 'all' ? (
+                    <PlatformLogo platform={p.key} size={14} />
+                  ) : (
+                    <span
+                      className="h-2 w-2 rounded-full shrink-0"
+                      style={{ backgroundColor: p.color }}
+                    />
+                  )}
                   <span>{p.label}</span>
                   <span className="font-mono text-[10px] opacity-75">
                     ({count})
@@ -455,10 +460,7 @@ export default function ContestsPage() {
                           color: conf.color,
                         }}
                       >
-                        <span
-                          className="h-2 w-2 rounded-full"
-                          style={{ backgroundColor: conf.color }}
-                        />
+                        <PlatformLogo platform={platKey} size={14} />
                         <span>{conf.label}</span>
                       </span>
 

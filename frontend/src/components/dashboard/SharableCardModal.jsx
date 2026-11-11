@@ -19,6 +19,7 @@ import {
   Layers,
   Award,
 } from 'lucide-react';
+import PlatformLogo from '../common/PlatformLogo.jsx';
 
 const CARD_THEMES = [
   {
@@ -576,9 +577,10 @@ export default function SharableCardModal({ isOpen, onClose, ranking, totals, us
                   {(platforms && platforms.length > 0 ? platforms : [{ platform: 'LeetCode' }, { platform: 'Codeforces' }, { platform: 'GitHub' }]).map((p, i) => (
                     <span
                       key={i}
-                      className="rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-medium text-white/90"
+                      className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white/90 flex items-center gap-1.5"
                     >
-                      • {p.platform}
+                      <PlatformLogo platform={p.platform} size={13} />
+                      <span>{p.platform}</span>
                     </span>
                   ))}
                 </div>

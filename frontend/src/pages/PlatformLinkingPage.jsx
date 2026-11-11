@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Link2, Sparkles, RefreshCw, AlertCircle, ArrowLeft, Terminal, CheckCircle2, Sliders } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
+import PlatformLogo from '../components/common/PlatformLogo.jsx';
 import api from '../api/axios.js';
 
 const AUTO_PLATFORMS = [
@@ -240,8 +241,9 @@ export default function PlatformLinkingPage() {
                             {/* Platform Name input */}
                             <div className="w-full md:w-1/3">
                               <div className="flex items-center justify-between mb-1.5">
-                                <label className="block text-xs font-semibold text-muted uppercase tracking-wider">
-                                  Platform Name
+                                <label className="flex items-center gap-1.5 text-xs font-semibold text-muted uppercase tracking-wider">
+                                  {isAutomated && <PlatformLogo platform={matchedAuto.key} size={15} />}
+                                  <span>Platform Name</span>
                                 </label>
                                 {isAutomated && (
                                   <span className="text-[10px] text-easy font-semibold flex items-center gap-1">

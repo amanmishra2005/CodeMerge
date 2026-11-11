@@ -48,6 +48,7 @@ import PlatformNavTabs, {
   normalizePlatformKey,
 } from '../components/dashboard/PlatformNavTabs.jsx';
 import SharableCardModal from '../components/dashboard/SharableCardModal.jsx';
+import PlatformLogo from '../components/common/PlatformLogo.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import api from '../api/axios.js';
 
@@ -258,11 +259,13 @@ export default function PlatformDashboard({ defaultPlatform }) {
               <ArrowLeft size={18} />
             </Link>
             <div>
-              <div className="flex items-center gap-2">
-                <span
-                  className="h-3 w-3 rounded-full"
-                  style={{ backgroundColor: conf.color }}
-                />
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="p-1.5 rounded-xl border bg-surface2/60 shrink-0 flex items-center justify-center"
+                  style={{ borderColor: `${conf.color}35` }}
+                >
+                  <PlatformLogo platform={currentKey} size={24} />
+                </div>
                 <h1 className="font-display text-2xl sm:text-3xl font-bold text-text">
                   {conf.label} Dashboard
                 </h1>
@@ -461,11 +464,11 @@ export default function PlatformDashboard({ defaultPlatform }) {
                           <MapPin size={12} /> {platformData.location}
                         </span>
                       )}
-                      {platformData.school && (
+                      {typeof platformData.school === 'string' && isNaN(Number(platformData.school)) && platformData.school.trim() ? (
                         <span className="flex items-center gap-1">
                           <Building size={12} /> {platformData.school}
                         </span>
-                      )}
+                      ) : null}
                       {platformData.country && (
                         <span className="flex items-center gap-1">
                           <Globe size={12} /> {platformData.country}
@@ -728,9 +731,9 @@ export default function PlatformDashboard({ defaultPlatform }) {
             </div>
 
             {/* Main Content Grid: Left side analytics + Right side platform deep-dive */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left Column: Visual Charts & Difficulty */}
-              <div className="space-y-6">
+              <div className="lg:col-span-5 space-y-6">
                 {!isGH && (
                   /* Difficulty Distribution Chart */
                   <div className="card p-5 border border-border">
@@ -932,8 +935,8 @@ export default function PlatformDashboard({ defaultPlatform }) {
                   )}
               </div>
 
-              {/* Right Columns (2-Span): Deep Dive Platform Modules */}
-              <div className="lg:col-span-2 space-y-6">
+              {/* Right Columns (7-Span): Deep Dive Platform Modules */}
+              <div className="lg:col-span-7 space-y-6">
                 {/* 1. LEETCODE SPECIFIC MODULES */}
                 {currentKey === 'leetcode' && (
                   <div className="space-y-6">

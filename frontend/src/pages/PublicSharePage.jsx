@@ -211,8 +211,8 @@ export default function PublicSharePage() {
         {/* Aggregated Stats Overview */}
         <StatsOverview totals={totals} />
 
-        {/* Graphical Difficulty Breakdown */}
-        <DifficultyChart platforms={codingPlatforms} totals={totals} />
+        {/* Graphical Difficulty Breakdown & Algorithmic Radar */}
+        <DifficultyChart platforms={codingPlatforms} totals={totals} ranking={ranking} />
 
         {/* Connected Platforms */}
         <div className="space-y-4">

@@ -181,7 +181,7 @@ export default function Dashboard() {
                 <StatsOverview totals={totals} />
 
                 {/* Difficulty Graphical Mix & Bar Charts */}
-                <DifficultyChart platforms={codingPlatforms} totals={totals} />
+                <DifficultyChart platforms={codingPlatforms} totals={totals} ranking={ranking} />
 
                 {/* Connected Platforms Grid */}
                 <div className="space-y-4">
