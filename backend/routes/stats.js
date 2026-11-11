@@ -125,6 +125,7 @@ async function executeRefreshForUser(user) {
 
             return {
               ...pruned,
+              username: pruned.username || p.username,
               platform: PLATFORM_CANONICAL_LABELS[key] || p.platform,
               label: p.label || '',
               id: p._id ? p._id.toString() : '',
@@ -152,7 +153,17 @@ async function executeRefreshForUser(user) {
             error: fetchErr.message || 'Could not fetch stats.',
           };
         }
-        return null;
+        return {
+          platform: PLATFORM_CANONICAL_LABELS[key] || p.platform,
+          username: p.username,
+          totalSolved: Math.max(Number(p.totalSolved) || 0, (Number(p.easy) || 0) + (Number(p.medium) || 0) + (Number(p.hard) || 0)),
+          easy: Number(p.easy) || 0,
+          medium: Number(p.medium) || 0,
+          hard: Number(p.hard) || 0,
+          label: p.label || '',
+          id: p._id ? p._id.toString() : '',
+          error: 'Could not fetch stats.',
+        };
       } else {
         // Custom platform - return manually entered stats
         const easy = Number(p.easy) || 0;
@@ -289,6 +300,7 @@ router.get('/refresh/:platformKey', protect, async (req, res) => {
         const pruned = pruneSnapshotForStorage(stats);
         updatedSnapshot = {
           ...pruned,
+          username: pruned?.username || targetPlatform.username,
           platform: PLATFORM_CANONICAL_LABELS[targetKey] || targetPlatform.platform,
           label: targetPlatform.label || '',
           id: targetPlatform._id ? targetPlatform._id.toString() : '',

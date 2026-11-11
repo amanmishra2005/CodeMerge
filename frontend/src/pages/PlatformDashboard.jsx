@@ -1422,6 +1422,35 @@ export default function PlatformDashboard({ defaultPlatform }) {
                         </div>
                       </div>
                     </div>
+
+                    {/* CodeChef Stars & Division Mastery Matrix */}
+                    <div className="card p-5 border border-border space-y-3">
+                      <h3 className="font-display font-semibold text-text text-sm flex items-center gap-2">
+                        <Star size={16} className="text-medium" />
+                        <span>CodeChef Star Progression</span>
+                      </h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                        {[
+                          { stars: '1★', rating: '0 - 1399', div: 'Div 4', active: platformData.stars === '1★' || (!platformData.stars && (!platformData.currentRating || platformData.currentRating < 1400)) },
+                          { stars: '2★', rating: '1400 - 1599', div: 'Div 3', active: platformData.stars === '2★' || (platformData.currentRating >= 1400 && platformData.currentRating < 1600) },
+                          { stars: '3★', rating: '1600 - 1799', div: 'Div 3', active: platformData.stars === '3★' || (platformData.currentRating >= 1600 && platformData.currentRating < 1800) },
+                          { stars: '4★+', rating: '1800+', div: 'Div 2 / 1', active: platformData.stars && !['1★','2★','3★'].includes(platformData.stars) || platformData.currentRating >= 1800 },
+                        ].map((tier, idx) => (
+                          <div
+                            key={idx}
+                            className={`p-3 rounded-xl border transition-all ${
+                              tier.active
+                                ? 'bg-medium/15 border-medium/50 text-medium font-semibold shadow-[0_0_15px_rgba(247,147,30,0.15)]'
+                                : 'bg-surface2/50 border-border/50 text-muted'
+                            }`}
+                          >
+                            <div className="font-mono text-sm">{tier.stars}</div>
+                            <div className="text-[10px] opacity-90 mt-0.5">{tier.rating}</div>
+                            <div className="text-[10px] font-mono mt-1 opacity-75">{tier.div}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -1619,13 +1648,12 @@ export default function PlatformDashboard({ defaultPlatform }) {
                 {/* 6. HACKERRANK SPECIFIC MODULES */}
                 {currentKey === 'hackerrank' && (
                   <div className="space-y-6">
-                    {platformData.badges && platformData.badges.length > 0 && (
+                    {platformData.badges && platformData.badges.length > 0 ? (
                       <div className="card p-5 border border-border space-y-4">
                         <h3 className="font-display font-semibold text-text text-sm flex items-center gap-2">
                           <Award size={16} className="text-accent2" />
                           <span>
-                            HackerRank Skill Badges ({platformData.badges.length}
-                            )
+                            HackerRank Skill Badges ({platformData.badges.length})
                           </span>
                         </h3>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -1645,6 +1673,23 @@ export default function PlatformDashboard({ defaultPlatform }) {
                               <div className="text-[10px] text-muted mt-2">
                                 {b.solved} challenges solved
                               </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="card p-5 border border-border space-y-3">
+                        <h3 className="font-display font-semibold text-text text-sm flex items-center gap-2">
+                          <Award size={16} className="text-accent2" />
+                          <span>HackerRank Skill Domains</span>
+                        </h3>
+                        <p className="text-xs text-muted">
+                          Solve domain-specific challenges on HackerRank to earn verified Gold stars and skill badges.
+                        </p>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs pt-1">
+                          {['Problem Solving', 'Python', 'Java', 'C++', 'SQL', 'Algorithms'].map((skill, idx) => (
+                            <div key={idx} className="p-2.5 rounded-xl bg-surface2/50 border border-border/50 text-center">
+                              <span className="font-medium text-text">{skill}</span>
                             </div>
                           ))}
                         </div>
@@ -1672,6 +1717,49 @@ export default function PlatformDashboard({ defaultPlatform }) {
                             Rated Point Sum: {platformData.ratedPointSum || '—'}
                           </div>
                         </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 text-center w-full sm:w-auto">
+                        <div className="card p-2.5 bg-surface/50 border border-border/40">
+                          <div className="text-sm font-bold font-mono text-text">
+                            {platformData.totalSolved || 0}
+                          </div>
+                          <div className="text-[10px] text-muted">Total ACs</div>
+                        </div>
+                        <div className="card p-2.5 bg-surface/50 border border-border/40">
+                          <div className="text-sm font-bold font-mono text-accent">
+                            {platformData.ratedPointRank ? `#${platformData.ratedPointRank}` : '—'}
+                          </div>
+                          <div className="text-[10px] text-muted">Point Rank</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* AtCoder Rating Colors Tiers */}
+                    <div className="card p-5 border border-border space-y-3">
+                      <h3 className="font-display font-semibold text-text text-sm flex items-center gap-2">
+                        <Star size={16} className="text-muted" />
+                        <span>AtCoder Rating Rank Tiers</span>
+                      </h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                        {[
+                          { tier: 'Gray', rating: '0 - 399', color: '#808080' },
+                          { tier: 'Brown', rating: '400 - 799', color: '#8B572A' },
+                          { tier: 'Green', rating: '800 - 1199', color: '#008000' },
+                          { tier: 'Cyan', rating: '1200 - 1599', color: '#00C0C0' },
+                          { tier: 'Blue', rating: '1600 - 1999', color: '#0000FF' },
+                          { tier: 'Yellow', rating: '2000 - 2399', color: '#C0C000' },
+                          { tier: 'Orange', rating: '2400 - 2799', color: '#FF8000' },
+                          { tier: 'Red', rating: '2800+', color: '#FF0000' },
+                        ].map((t, idx) => (
+                          <div key={idx} className="p-2.5 rounded-xl bg-surface2/40 border border-border/40 flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: t.color }} />
+                            <div>
+                              <div className="font-semibold text-text text-[11px]">{t.tier}</div>
+                              <div className="text-[10px] text-muted font-mono">{t.rating}</div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
