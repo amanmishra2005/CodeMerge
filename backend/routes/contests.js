@@ -15,7 +15,7 @@ const PLATFORMS_META = {
   codeforces: { label: 'Codeforces', color: '#4C8DFF' },
   codechef: { label: 'CodeChef', color: '#F7931E' },
   atcoder: { label: 'AtCoder', color: '#9CA3AF' },
-  hackerrank: { label: 'HackerRank', color: '#FF5C5C' },
+  hackerrank: { label: 'HackerRank', color: '#00EA64' },
   hackerearth: { label: 'HackerEarth', color: '#3253DC' },
   gfg: { label: 'GeeksforGeeks', color: '#3DDC84' },
 };

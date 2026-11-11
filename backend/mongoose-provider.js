@@ -4,7 +4,7 @@ const mockMongoose = require('./mock-mongoose');
 let activeMongoose = mongooseReal;
 
 // Determine if we should use the mock database wrapper initially
-const mongoUri = process.env.MONGO_URI || '';
+const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI || '';
 const isMock = !mongoUri || 
                mongoUri.includes('<') || 
                mongoUri.includes('your_mongodb_uri') || 

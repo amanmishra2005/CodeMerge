@@ -38,7 +38,7 @@ const PLATFORMS_FILTER = [
   { key: 'codeforces', label: 'Codeforces', color: '#4C8DFF' },
   { key: 'codechef', label: 'CodeChef', color: '#F7931E' },
   { key: 'atcoder', label: 'AtCoder', color: '#9CA3AF' },
-  { key: 'hackerrank', label: 'HackerRank', color: '#FF5C5C' },
+  { key: 'hackerrank', label: 'HackerRank', color: '#00EA64' },
   { key: 'gfg', label: 'GeeksforGeeks', color: '#3DDC84' },
 ];
 

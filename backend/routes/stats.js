@@ -428,10 +428,21 @@ router.get('/share/:identifier', async (req, res) => {
       return res.status(400).json({ message: 'User identifier required' });
     }
 
-    // Try finding by _id first, then by email (without domain or full)
-    let user = await User.findById(identifier);
+    // Try finding by _id first (if valid 24-char hex), then by exact email, then by email username prefix
+    let user = null;
+    if (/^[0-9a-fA-F]{24}$/.test(identifier)) {
+      try {
+        user = await User.findById(identifier);
+      } catch (e) {
+        user = null;
+      }
+    }
     if (!user) {
       user = await User.findOne({ email: identifier.toLowerCase() });
+    }
+    if (!user) {
+      const escaped = identifier.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      user = await User.findOne({ email: { $regex: new RegExp(`^${escaped}@`, 'i') } });
     }
 
     if (!user) {

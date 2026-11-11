@@ -18,43 +18,35 @@ export default function Contact() {
       // 1. Save contact submission to DB via backend
       await api.post('/contact', form);
 
-      // 2. Fetch the Web3Forms access key dynamically from the backend config
-      let accessKey = '';
+      // 2. Fetch the Web3Forms access key dynamically if configured
       try {
         const configRes = await api.get('/contact/config');
-        accessKey = configRes.data?.accessKey;
-      } catch (configErr) {
-        console.error('Failed to retrieve Web3Forms configuration:', configErr);
+        const accessKey = configRes.data?.accessKey;
+
+        if (accessKey) {
+          await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+              access_key: accessKey,
+              name: form.name,
+              email: form.email,
+              subject: form.subject || 'New Message from CodeMerge Contact Form',
+              message: form.message,
+              from_name: 'CodeMerge Contact Form',
+            }),
+          });
+        }
+      } catch (externalErr) {
+        // Non-fatal if external forward fails since DB already captured submission
+        console.warn('Web3Forms external notification skipped:', externalErr);
       }
 
-      if (!accessKey) {
-        throw new Error('Contact email configuration is missing.');
-      }
-
-      // 3. Dispatch the submission directly to Web3Forms from the client (browser)
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          access_key: accessKey,
-          name: form.name,
-          email: form.email,
-          subject: form.subject || 'New Message from CodeMerge Contact Form',
-          message: form.message,
-          from_name: 'CodeMerge Contact Form',
-        }),
-      });
-
-      const result = await response.json();
-      if (result && result.success) {
-        setStatus('success');
-        setForm({ name: '', email: '', subject: '', message: '' });
-      } else {
-        throw new Error(result?.message || 'Failed to send email via Web3Forms.');
-      }
+      setStatus('success');
+      setForm({ name: '', email: '', subject: '', message: '' });
     } catch (err) {
       setStatus('error');
       setError(err.response?.data?.message || err.message || 'Something went wrong. Please try again.');

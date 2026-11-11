@@ -141,11 +141,11 @@ export default function PlatformDashboard({ defaultPlatform }) {
   const userPlatformsList = Array.isArray(user?.platforms)
     ? user.platforms
     : user?.platforms && typeof user.platforms === 'object'
-    ? Object.entries(user.platforms).map(([k, v]) => ({
+      ? Object.entries(user.platforms).map(([k, v]) => ({
         platform: k,
         username: typeof v === 'object' ? v?.username : v,
       }))
-    : [];
+      : [];
 
   const safePlatforms = Array.isArray(platforms) ? platforms : [];
 
@@ -161,16 +161,16 @@ export default function PlatformDashboard({ defaultPlatform }) {
     snapshotPlatform ||
     (userPlatform
       ? {
-          platform: conf.label,
-          username: userPlatform.username,
-          label: userPlatform.label || '',
-          totalSolved: Number(userPlatform.totalSolved) || 0,
-          easy: Number(userPlatform.easy) || 0,
-          medium: Number(userPlatform.medium) || 0,
-          hard: Number(userPlatform.hard) || 0,
-          commits: Number(userPlatform.commits) || 0,
-          error: null,
-        }
+        platform: conf.label,
+        username: userPlatform.username,
+        label: userPlatform.label || '',
+        totalSolved: Number(userPlatform.totalSolved) || 0,
+        easy: Number(userPlatform.easy) || 0,
+        medium: Number(userPlatform.medium) || 0,
+        hard: Number(userPlatform.hard) || 0,
+        commits: Number(userPlatform.commits) || 0,
+        error: null,
+      }
       : null);
 
   const isLinked = Boolean(platformData && platformData.username);
@@ -296,7 +296,7 @@ export default function PlatformDashboard({ defaultPlatform }) {
                 )}
               </div>
               <p className="text-xs sm:text-sm text-muted mt-0.5">
-                Detailed metrics, problem analytics, and activity for @
+                Detailed Metrics, Problem Analytics, and Activity for @
                 {platformData?.username || routeKey}
               </p>
             </div>
@@ -492,8 +492,8 @@ export default function PlatformDashboard({ defaultPlatform }) {
                         </span>
                       ) : null}
                       {typeof platformData.school === 'string' &&
-                      isNaN(Number(platformData.school)) &&
-                      platformData.school.trim() ? (
+                        isNaN(Number(platformData.school)) &&
+                        platformData.school.trim() ? (
                         <span className="flex items-center gap-1">
                           <Building size={12} /> {platformData.school}
                         </span>
@@ -835,11 +835,10 @@ export default function PlatformDashboard({ defaultPlatform }) {
                           <div
                             className="h-full bg-easy rounded-full transition-all duration-500"
                             style={{
-                              width: `${
-                                totalSolved > 0
+                              width: `${totalSolved > 0
                                   ? (easy / totalSolved) * 100
                                   : 0
-                              }%`,
+                                }%`,
                             }}
                           />
                         </div>
@@ -856,11 +855,10 @@ export default function PlatformDashboard({ defaultPlatform }) {
                           <div
                             className="h-full bg-medium rounded-full transition-all duration-500"
                             style={{
-                              width: `${
-                                totalSolved > 0
+                              width: `${totalSolved > 0
                                   ? (medium / totalSolved) * 100
                                   : 0
-                              }%`,
+                                }%`,
                             }}
                           />
                         </div>
@@ -877,11 +875,10 @@ export default function PlatformDashboard({ defaultPlatform }) {
                           <div
                             className="h-full bg-hard rounded-full transition-all duration-500"
                             style={{
-                              width: `${
-                                totalSolved > 0
+                              width: `${totalSolved > 0
                                   ? (hard / totalSolved) * 100
                                   : 0
-                              }%`,
+                                }%`,
                             }}
                           />
                         </div>
@@ -1252,11 +1249,10 @@ export default function PlatformDashboard({ defaultPlatform }) {
                                   </span>
                                 </div>
                                 <span
-                                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold shrink-0 ${
-                                    s.verdict === 'OK'
+                                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold shrink-0 ${s.verdict === 'OK'
                                       ? 'bg-easy/15 text-easy'
                                       : 'bg-hard/15 text-hard'
-                                  }`}
+                                    }`}
                                 >
                                   {s.verdict === 'OK' ? 'Accepted' : s.verdict}
                                 </span>
@@ -1273,7 +1269,7 @@ export default function PlatformDashboard({ defaultPlatform }) {
                   <div className="space-y-6">
                     {/* Top Public Repositories */}
                     {platformData.topRepositories &&
-                    platformData.topRepositories.length > 0 ? (
+                      platformData.topRepositories.length > 0 ? (
                       <div className="card p-5 border border-border space-y-4">
                         <div className="flex items-center justify-between">
                           <h3 className="font-display font-semibold text-text text-sm flex items-center gap-2">
@@ -1434,15 +1430,14 @@ export default function PlatformDashboard({ defaultPlatform }) {
                           { stars: '1★', rating: '0 - 1399', div: 'Div 4', active: platformData.stars === '1★' || (!platformData.stars && (!platformData.currentRating || platformData.currentRating < 1400)) },
                           { stars: '2★', rating: '1400 - 1599', div: 'Div 3', active: platformData.stars === '2★' || (platformData.currentRating >= 1400 && platformData.currentRating < 1600) },
                           { stars: '3★', rating: '1600 - 1799', div: 'Div 3', active: platformData.stars === '3★' || (platformData.currentRating >= 1600 && platformData.currentRating < 1800) },
-                          { stars: '4★+', rating: '1800+', div: 'Div 2 / 1', active: platformData.stars && !['1★','2★','3★'].includes(platformData.stars) || platformData.currentRating >= 1800 },
+                          { stars: '4★+', rating: '1800+', div: 'Div 2 / 1', active: platformData.stars && !['1★', '2★', '3★'].includes(platformData.stars) || platformData.currentRating >= 1800 },
                         ].map((tier, idx) => (
                           <div
                             key={idx}
-                            className={`p-3 rounded-xl border transition-all ${
-                              tier.active
+                            className={`p-3 rounded-xl border transition-all ${tier.active
                                 ? 'bg-medium/15 border-medium/50 text-medium font-semibold shadow-[0_0_15px_rgba(247,147,30,0.15)]'
                                 : 'bg-surface2/50 border-border/50 text-muted'
-                            }`}
+                              }`}
                           >
                             <div className="font-mono text-sm">{tier.stars}</div>
                             <div className="text-[10px] opacity-90 mt-0.5">{tier.rating}</div>

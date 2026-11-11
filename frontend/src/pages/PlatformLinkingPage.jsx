@@ -11,10 +11,10 @@ const AUTO_PLATFORMS = [
   { key: 'leetcode', label: 'LeetCode', color: '#FFB454', placeholder: 'e.g. janesmith' },
   { key: 'codeforces', label: 'Codeforces', color: '#4C8DFF', placeholder: 'e.g. tourist' },
   { key: 'gfg', label: 'GeeksforGeeks', color: '#3DDC84', placeholder: 'e.g. jane_gfg' },
-  { key: 'hackerrank', label: 'HackerRank', color: '#FF5C5C', placeholder: 'e.g. janesmith_hr' },
+  { key: 'hackerrank', label: 'HackerRank', color: '#00EA64', placeholder: 'e.g. janesmith_hr' },
   { key: 'codechef', label: 'CodeChef', color: '#F7931E', placeholder: 'e.g. coder_cc' },
-  { key: 'atcoder', label: 'AtCoder', color: '#808080', placeholder: 'e.g. tourist' },
-  { key: 'github', label: 'GitHub', color: '#24292e', placeholder: 'e.g. torvalds' },
+  { key: 'atcoder', label: 'AtCoder', color: '#9CA3AF', placeholder: 'e.g. tourist' },
+  { key: 'github', label: 'GitHub', color: '#58A6FF', placeholder: 'e.g. torvalds' },
 ];
 
 const OTHER_PLATFORMS = [
