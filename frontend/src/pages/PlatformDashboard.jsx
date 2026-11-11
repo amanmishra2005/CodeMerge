@@ -28,6 +28,7 @@ import {
   Globe,
   Tag,
   Share2,
+  Activity,
 } from 'lucide-react';
 import {
   PieChart,
@@ -40,6 +41,13 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  AreaChart,
+  Area,
 } from 'recharts';
 import Navbar from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
@@ -129,12 +137,24 @@ export default function PlatformDashboard({ defaultPlatform }) {
     }
   };
 
+  // Safe array normalization for platforms lookup
+  const userPlatformsList = Array.isArray(user?.platforms)
+    ? user.platforms
+    : user?.platforms && typeof user.platforms === 'object'
+    ? Object.entries(user.platforms).map(([k, v]) => ({
+        platform: k,
+        username: typeof v === 'object' ? v?.username : v,
+      }))
+    : [];
+
+  const safePlatforms = Array.isArray(platforms) ? platforms : [];
+
   // Find linked platform in snapshot or user profile
-  const userPlatform = (user?.platforms || []).find(
-    (p) => normalizePlatformKey(p.platform) === currentKey
+  const userPlatform = userPlatformsList.find(
+    (p) => normalizePlatformKey(p?.platform) === currentKey
   );
-  const snapshotPlatform = platforms.find(
-    (p) => normalizePlatformKey(p.platform) === currentKey
+  const snapshotPlatform = safePlatforms.find(
+    (p) => normalizePlatformKey(p?.platform) === currentKey
   );
 
   const platformData =
@@ -485,11 +505,11 @@ export default function PlatformDashboard({ defaultPlatform }) {
                       ) : null}
                     </div>
 
-                    {platformData.bio && (
+                    {platformData.bio && typeof platformData.bio === 'string' && platformData.bio.trim() ? (
                       <p className="text-xs text-muted/90 mt-2 max-w-xl line-clamp-2">
                         {platformData.bio}
                       </p>
-                    )}
+                    ) : null}
                   </div>
                 </div>
 

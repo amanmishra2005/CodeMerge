@@ -11,6 +11,7 @@ const {
   validatePasswordStrength,
   validateEmail,
 } = require('../middleware/security');
+const { sendVerificationCodeEmail } = require('../utils/email');
 
 const router = express.Router();
 
@@ -103,7 +104,7 @@ router.post('/login', authLimiter, async (req, res) => {
 });
 
 // @route  POST /api/auth/forgot-password
-// @desc   Initiates password reset by generating a secure hashed token
+// @desc   Initiates password reset by generating a secure 6-digit verification code sent to user email
 router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
   try {
     const { email } = req.body;
@@ -123,30 +124,38 @@ router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
         });
       }
       return res.json({
-        message: 'If an account with that email exists, password reset instructions have been sent.',
+        message: 'If an account with that email exists, a 6-digit verification code has been sent.',
       });
     }
 
-    // Generate crypto token & SHA-256 hash
-    const resetToken = user.createPasswordResetToken();
+    // Generate 6-digit numeric verification OTP
+    const resetCode = user.createPasswordResetCode();
     await user.save();
 
-    // Construct the reset URL
+    // Construct the optional direct reset URL
     const clientOrigin = (process.env.CLIENT_ORIGIN || 'http://localhost:5180').split(',')[0].trim();
-    const resetUrl = `${clientOrigin}/reset-password/${resetToken}`;
+    const resetUrl = `${clientOrigin}/reset-password/${resetCode}`;
+
+    // Dispatch verification email
+    await sendVerificationCodeEmail({
+      email: user.email,
+      name: user.name,
+      code: resetCode,
+    });
 
     console.log('==================================================');
-    console.log('PASSWORD RESET REQUESTED:');
+    console.log('PASSWORD RESET 6-DIGIT CODE DISPATCHED:');
     console.log(`User: ${user.email} (${user.name})`);
-    console.log(`Reset Token: ${resetToken}`);
-    console.log(`Reset URL: ${resetUrl}`);
+    console.log(`Verification Code: [ ${resetCode} ]`);
     console.log('Valid for: 15 minutes');
     console.log('==================================================');
 
-    // Return message and include resetUrl for immediate developer/local preview
+    // Return message and include devCode for development / instant test preview
     res.json({
-      message: 'Password reset link generated successfully.',
-      resetToken,
+      message: `A unique 6-digit verification code has been sent to ${user.email}.`,
+      email: user.email,
+      devCode: resetCode,
+      resetToken: resetCode,
       devResetUrl: resetUrl,
       expiresInMinutes: 15,
     });
@@ -156,8 +165,55 @@ router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
   }
 });
 
+// @route  POST /api/auth/verify-code
+// @desc   Verifies the 6-digit code sent to the user email
+router.post('/verify-code', async (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    if (!email || typeof email !== 'string') {
+      return res.status(400).json({ valid: false, message: 'Email address is required' });
+    }
+
+    const cleanCode = String(code || '').trim();
+    if (!cleanCode || cleanCode.length < 6) {
+      return res.status(400).json({ valid: false, message: 'Please enter the complete 6-digit verification code' });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: cleanEmail });
+
+    if (!user) {
+      return res.status(400).json({ valid: false, message: 'No account found with this email' });
+    }
+
+    if (!user.resetPasswordToken || !user.resetPasswordExpire) {
+      return res.status(400).json({ valid: false, message: 'No active verification code found. Please request a new code.' });
+    }
+
+    if (new Date(user.resetPasswordExpire).getTime() < Date.now()) {
+      return res.status(400).json({ valid: false, message: 'Verification code has expired. Please request a new code.' });
+    }
+
+    const hashedCode = crypto.createHash('sha256').update(cleanCode).digest('hex');
+    if (hashedCode !== user.resetPasswordToken) {
+      return res.status(400).json({ valid: false, message: 'Incorrect verification code. Please check and try again.' });
+    }
+
+    res.json({
+      valid: true,
+      message: 'Verification code confirmed. Please set your new password.',
+      email: user.email,
+      verifiedToken: cleanCode,
+    });
+  } catch (err) {
+    console.error('Verify code error:', err);
+    res.status(500).json({ valid: false, message: 'Verification failed' });
+  }
+});
+
 // @route  GET /api/auth/verify-reset-token/:token
-// @desc   Verifies that a reset token is valid and unexpired
+// @desc   Verifies that a reset token or code is valid and unexpired
 router.get('/verify-reset-token/:token', async (req, res) => {
   try {
     const { token } = req.params;
@@ -165,15 +221,15 @@ router.get('/verify-reset-token/:token', async (req, res) => {
       return res.status(400).json({ valid: false, message: 'Invalid reset token' });
     }
 
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const hashedToken = crypto.createHash('sha256').update(token.trim()).digest('hex');
     const user = await User.findOne({ resetPasswordToken: hashedToken });
 
     if (!user) {
-      return res.status(400).json({ valid: false, message: 'Invalid or already used reset token' });
+      return res.status(400).json({ valid: false, message: 'Invalid or already used verification code' });
     }
 
     if (!user.resetPasswordExpire || new Date(user.resetPasswordExpire).getTime() < Date.now()) {
-      return res.status(400).json({ valid: false, message: 'Reset token has expired. Please request a new one.' });
+      return res.status(400).json({ valid: false, message: 'Verification code has expired. Please request a new one.' });
     }
 
     res.json({ valid: true, email: user.email });
@@ -182,8 +238,65 @@ router.get('/verify-reset-token/:token', async (req, res) => {
   }
 });
 
+// @route  POST /api/auth/reset-password
+// @desc   Resets password using email + 6-digit code or URL token
+router.post('/reset-password', resetPasswordLimiter, async (req, res) => {
+  try {
+    const { email, code, token, password } = req.body;
+    const verificationCode = String(code || token || '').trim();
+
+    if (!verificationCode) {
+      return res.status(400).json({ message: 'Verification code is required' });
+    }
+
+    if (typeof password !== 'string') {
+      return res.status(400).json({ message: 'Password must be a valid string' });
+    }
+
+    const passCheck = validatePasswordStrength(password);
+    if (!passCheck.valid) {
+      return res.status(400).json({ message: passCheck.message });
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(verificationCode).digest('hex');
+    
+    let query = { resetPasswordToken: hashedToken };
+    if (email && typeof email === 'string') {
+      query.email = email.trim().toLowerCase();
+    }
+
+    const user = await User.findOne(query);
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or already used verification code. Please request a new one.' });
+    }
+
+    if (!user.resetPasswordExpire || new Date(user.resetPasswordExpire).getTime() < Date.now()) {
+      return res.status(400).json({ message: 'Verification code has expired. Please request a new one.' });
+    }
+
+    // Set new password (bcrypt pre-save hook will hash it with 12 rounds)
+    user.password = password;
+    user.resetPasswordToken = null;
+    user.resetPasswordExpire = null;
+    await user.save();
+
+    // Auto-login user with fresh JWT
+    const authToken = signToken(user._id);
+
+    res.json({
+      message: 'Password reset successfully! You are now logged in.',
+      token: authToken,
+      user: user.toSafeObject(),
+    });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(500).json({ message: 'Failed to reset password', error: err.message });
+  }
+});
+
 // @route  POST /api/auth/reset-password/:token
-// @desc   Resets password with new password validation
+// @desc   Resets password with token parameter (backwards compatibility)
 router.post('/reset-password/:token', resetPasswordLimiter, async (req, res) => {
   try {
     const { token } = req.params;
@@ -202,15 +315,15 @@ router.post('/reset-password/:token', resetPasswordLimiter, async (req, res) => 
       return res.status(400).json({ message: passCheck.message });
     }
 
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const hashedToken = crypto.createHash('sha256').update(token.trim()).digest('hex');
     const user = await User.findOne({ resetPasswordToken: hashedToken });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or already used reset token' });
+      return res.status(400).json({ message: 'Invalid or already used verification code' });
     }
 
     if (!user.resetPasswordExpire || new Date(user.resetPasswordExpire).getTime() < Date.now()) {
-      return res.status(400).json({ message: 'Reset token has expired. Please request a new one.' });
+      return res.status(400).json({ message: 'Verification code has expired. Please request a new one.' });
     }
 
     // Set new password (bcrypt pre-save hook will hash it with 12 rounds)

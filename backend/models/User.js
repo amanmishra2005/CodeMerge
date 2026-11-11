@@ -60,7 +60,24 @@ userSchema.methods.comparePassword = function (candidate) {
   return bcrypt.compare(candidate, this.password);
 };
 
-// Generates a cryptographically strong reset token and saves its SHA-256 hash
+// Generates a cryptographically strong 6-digit numeric verification OTP
+userSchema.methods.createPasswordResetCode = function () {
+  // Generate a random 6-digit number string between 100000 and 999999
+  const resetCode = Math.floor(100000 + crypto.randomInt(900000)).toString();
+
+  // Hash code before storing to database so plain code is never stored in DB
+  this.resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(resetCode)
+    .digest('hex');
+
+  // Code expires in 15 minutes
+  this.resetPasswordExpire = new Date(Date.now() + 15 * 60 * 1000);
+
+  return resetCode;
+};
+
+// Generates a cryptographically strong reset token and saves its SHA-256 hash (backwards compatible)
 userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
 

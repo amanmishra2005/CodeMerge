@@ -14,6 +14,7 @@ import PlatformDashboard from './pages/PlatformDashboard.jsx';
 import ContestsPage from './pages/ContestsPage.jsx';
 import TermsOfService from './pages/TermsOfService.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
+import NotFound from './pages/NotFound.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 export default function App() {
@@ -84,6 +85,7 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
